@@ -277,7 +277,7 @@ class App(ctk.CTk,tk.Menu):
             print("Error:", response.status_code, response.text)
     
     def DrawGraphics(self):
-        plt.bar(self.name,self.price)
+        plt.bar(self.name,self.price,width=0.5)
         plt.show()
  
 if __name__ == "__main__":
