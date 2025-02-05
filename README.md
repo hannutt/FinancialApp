@@ -16,6 +16,7 @@ The user interface is implemented with the customTkinter library and it is possi
 data in the NoSQL cloud database used by the application. The cloud database is located in the Mongo Cloud Atlas service.
 
 Example image of the application's start view
+
 ![alt text](images/FinancialMain.png)
 
 CREDENTIAL SECURITY
@@ -32,6 +33,16 @@ the method that communicates with the REST API and retrieves the data using the 
 displayed as parsed in the Customtinter textbox component. When searching for stock information, the user can also select
 the "show earnings" check box. By clicking on that check box, the user sees not only the share information but also
 the share's estimated earnings information.
+
+FIND NEWS BY STOCK / CRYPTO / COMMODITY NAME
+
+The application user can also search for the latest news based on the name of the stock, cryptocurrency or commodity of her choice by clicking on the "News" checkbox. This feature uses the Newsapi.org API to which the user-supplied keyword is passed as a parameter.
+
+example picture
+
+![alt text](images/stockCB.png)
+
+
 
 SEARCH RSS FEEDS
 

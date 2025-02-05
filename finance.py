@@ -42,7 +42,7 @@ class App(ctk.CTk,tk.Menu):
         #App luokan textbox voidaan lähettää  options luokalle parametria command=lambda:o.currencyWidgets(self.textbox))
         self.menubar.add_command(label='Cur. convert',command=lambda:self.opt.currencyWidgets())
         self.menubar.add_command(label='Exchange rate',command=lambda:self.opt.createExcWidgets())
-        self.menubar.add_command(label='Business news',command=lambda:self.news.businessNews(self.textbox))
+      
        
         
         #self.add_cascade()
@@ -66,7 +66,7 @@ class App(ctk.CTk,tk.Menu):
         self.codeEntry = ctk.CTkEntry(self,placeholder_text="crypto/stock code",textvariable=self.inputField,validate="focusout", validatecommand=self.showInput)
         self.earningsSV=ctk.StringVar()
         self.earnings=ctk.CTkCheckBox(self,text="Show earnings?", onvalue="on", offvalue="off", variable=self.earningsSV)
-        self.newsAboutComp=ctk.CTkCheckBox(self,text="News?",command=lambda:self.news.companyNews(self.codeEntry.get()))
+        self.newsAboutComp=ctk.CTkCheckBox(self,text="News?",command=lambda:self.news.companyNews(self.codeEntry.get(),self.textbox))
         self.getBtn=ctk.CTkButton(self,text="Get data",command=self.selectMethods,width=5)
         self.getBtn.grid(row=7,column=1,columnspan=3,sticky="ew",padx=10,pady=10)
         self.textbox=ctk.CTkTextbox(self,width=200,corner_radius=5,height=105)
