@@ -25,6 +25,21 @@ All credentials used by the application, such as API keys, database usernames an
 environment variable. The environment variable is in Gitignore mode. The application retrieves credentials using the
 Python OS library if necessary with the environ.get method.
 
+VOICE COMMANDS
+
+The user can control some of the application's functions with their own speech.
+The application uses a library called SpeechRecognition and the device's microphone when listening to commands given by the user. For now these voice commands are available:
+
+CLEAR = Clears the application's text box
+
+STOCKS = Create an input field and two checkboxes in the user interface. The user needs them when looking for information about stocks
+
+CRYPTO= Create an input field in the user interface. The user can use this input field when searching for information about cryptocurrencies.
+
+STOCK INFO = Retrieves data from the API based on the trading ID of the stock entered by the user
+
+SAVE = Saves the contents of the application's text box to the MongoDB cloud database used by the application
+
 STOCK & CRYPTO CURRENCY INFORMATION SEARCH
 
 Stock/crypto information is searched using the stock's or crypto trading ID. For example, information on the Apple stock

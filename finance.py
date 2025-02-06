@@ -16,6 +16,7 @@ from options import Options
 from newsapi import NewsAPI
 from PIL import Image
 from databaseConnection import DatabaseConnection
+import speech_recognition as sr
 #Api-avain on talletettu env-muuttujaan, tässä haetaan sen sisältämä merkkijono
 apk=os.environ.get('apk')
 #Asettaa sovelluksen ulkoasutilan System määrittää ulkoasun saman kuin järjestelmän. dark on tumma teema
@@ -37,11 +38,14 @@ class App(ctk.CTk,tk.Menu):
         self.opt=Options()
         self.news=NewsAPI()
         self.dbconn=DatabaseConnection()
+       
     
       
         #App luokan textbox voidaan lähettää  options luokalle parametria command=lambda:o.currencyWidgets(self.textbox))
         self.menubar.add_command(label='Cur. convert',command=lambda:self.opt.currencyWidgets())
         self.menubar.add_command(label='Exchange rate',command=lambda:self.opt.createExcWidgets())
+        self.menubar.add_command(label='Give voice comm.',command=lambda:self.speechReg())
+      
       
        
         
@@ -95,6 +99,27 @@ class App(ctk.CTk,tk.Menu):
         self.writeUrl.grid(row=6,column=6,columnspan=3,pady=(10,0))
 
         self.valueCB=ctk.CTkCheckBox(self,text="Graphics",command=self.DrawGraphics)
+    
+    def speechReg(self):
+        r = sr.Recognizer()
+        with sr.Microphone() as source:
+            audio_text = r.listen(source,timeout=8.0)
+    
+        try:
+            if r.recognize_google(audio_text)=="stocks":
+                self.voice_stocks()
+            if r.recognize_google(audio_text)=="clear":
+                self.clearTextBox()
+            if r.recognize_google(audio_text)=="crypto":
+                self.codeEntry.grid(row=5, column=1,columnspan=1, padx=20,pady=20, sticky="ew")
+            if r.recognize_google(audio_text)=="stock info":
+                 self.fetchData()
+            if r.recognize_google(audio_text)=="save":
+                 self.dbconn.DBsave(self.textbox.get('1.0',END))
+            
+        except:
+             print("error")
+
     
   
 
@@ -279,6 +304,11 @@ class App(ctk.CTk,tk.Menu):
     def DrawGraphics(self):
         plt.bar(self.name,self.price,width=0.5)
         plt.show()
+    
+    def voice_stocks(self):
+         self.codeEntry.grid(row=5, column=1,columnspan=1, padx=20,pady=20, sticky="ew")
+         self.earnings.grid(row=6,column=1,sticky="W")
+         self.newsAboutComp.grid(row=6,column=1,sticky="E")
  
 if __name__ == "__main__":
 
