@@ -17,6 +17,8 @@ from newsapi import NewsAPI
 from PIL import Image
 from databaseConnection import DatabaseConnection
 import speech_recognition as sr
+
+
 #Api-avain on talletettu env-muuttujaan, tässä haetaan sen sisältämä merkkijono
 apk=os.environ.get('apk')
 #Asettaa sovelluksen ulkoasutilan System määrittää ulkoasun saman kuin järjestelmän. dark on tumma teema
@@ -31,6 +33,7 @@ class App(ctk.CTk,tk.Menu):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.font = ctk.CTkFont(family="Times", size=14)
         self.words=['Crypto','Stocks','Precious metals']
         self.title("Finance App")
         self.menubar=tk.Menu(self)
@@ -64,39 +67,45 @@ class App(ctk.CTk,tk.Menu):
         
         #pudotusvalikko
         self.optMenu = ctk.CTkOptionMenu(self,
-                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','Business news'],command=self.optionmenu_callback)
-        self.optMenu.grid(row=3, column=1,padx=5, pady=10,columnspan=1, sticky="ew")
+                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','Business news'],command=self.optionmenu_callback,width=200)
+        self.optMenu.grid(row=3, column=1, pady=10,columnspan=1, sticky="w")
 
         self.codeEntry = ctk.CTkEntry(self,placeholder_text="crypto/stock code",textvariable=self.inputField,validate="focusout", validatecommand=self.showInput)
         self.earningsSV=ctk.StringVar()
         self.earnings=ctk.CTkCheckBox(self,text="Show earnings?", onvalue="on", offvalue="off", variable=self.earningsSV)
         self.newsAboutComp=ctk.CTkCheckBox(self,text="News?",command=lambda:self.news.companyNews(self.codeEntry.get(),self.textbox))
-        self.getBtn=ctk.CTkButton(self,text="Get data",command=self.selectMethods,width=5)
-        self.getBtn.grid(row=7,column=1,columnspan=3,sticky="ew",padx=10,pady=10)
-        self.textbox=ctk.CTkTextbox(self,width=200,corner_radius=5,height=105)
+        self.getBtn=ctk.CTkButton(self,text="Get data",command=self.selectMethods,width=200)
+        self.getBtn.grid(row=7,column=1,columnspan=3,sticky="w",pady=10)
+        self.textbox=ctk.CTkTextbox(self,width=200,corner_radius=5,height=105,font=self.font)
         self.textbox.grid(row=9,column=1,sticky="ew",columnspan=1)
         #lambdan avulla voidaan antaa metodille parametri, ilman lambdaa metodi jossa on () merkit
         #suoritetaan heti
         self.rssSV=ctk.StringVar()
         self.klUrl=ctk.StringVar(value="https://feeds.kauppalehti.fi/rss/main")
         self.klRss=ctk.CTkCheckBox(self,text="Kauppalehti RSS",command=lambda:self.selRssSource(self.klUrl.get()),onvalue="on",offvalue="off")
-        self.klRss.grid(row=3,column=7,columnspan=3)
+        self.klRss.grid(row=1,column=7,columnspan=3)
         self.clearBtn=ctk.CTkButton(self,text="Clear",command=self.clearTextBox)
         self.clearBtn.grid(row=10,column=1,pady=(10,10),sticky="w")
         self.saveBtn=ctk.CTkButton(self,text='Save',command=lambda:self.dbconn.DBsave(self.textbox.get('1.0',END)))
-        self.saveBtn.grid(row=11,column=1,sticky="w")
+        self.saveBtn.grid(row=10,column=1,sticky="e")
+
+        #zoomintext metodi saa parametrina fontin tyypin (self.font) ja fontin koon (self.font._size)
+        self.zoomIn=ctk.CTkButton(self,text="+",width=50,command=lambda:self.opt.zoomInText(self.font,self.font._size))
+        self.zoomIn.grid(row=9,column=2,padx=10)
+        self.zoomOut=ctk.CTkButton(self,text="-",width=50,command=lambda:self.opt.zoomOutText(self.font,self.font._size))
+        self.zoomOut.grid(row=9,column=2,sticky="s")
         ''''
         self.urlInput=ctk.CTkEntry(self)
         self.urlInput.grid(row=6,column=8,columnspan=3)
         '''
         self.invUrl=ctk.StringVar(value='https://fi.investing.com/rss/news_25.rss')
         self.invRss=ctk.CTkCheckBox(self,text="Investing RSS",command=lambda:self.selRssSource(self.invUrl.get()),variable=self.rssSV,onvalue="on",offvalue="off")
-        self.invRss.grid(row=5,column=7,columnspan=2)
+        self.invRss.grid(row=2,column=7,sticky="nw")
 
         self.wUrl=ctk.StringVar()
         self.writeUrl=ctk.CTkCheckBox(self,text="Own RSS url?",variable=self.wUrl,onvalue="on",offvalue="off",command=self.showInput)
         #pady(10,0) tarkoittaa, että ylös lisätään 10 pikseliä tyhjää tilaa ja alas 0 pikseliä
-        self.writeUrl.grid(row=6,column=6,columnspan=3,pady=(10,0))
+        self.writeUrl.grid(row=2,column=7,sticky="ew")
 
         self.valueCB=ctk.CTkCheckBox(self,text="Graphics",command=self.DrawGraphics)
     

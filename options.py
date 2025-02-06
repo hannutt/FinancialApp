@@ -13,6 +13,7 @@ class Options(ctk.CTk):
         self.topWIn=ctk.CTkToplevel()
         self.textbox=ctk.CTkTextbox(self.topWIn)
         self.topWIn.geometry('250x250')
+        
     
         
 
@@ -55,6 +56,15 @@ class Options(ctk.CTk):
             self.textbox.insert("end",response.text)
         else:
              print("Error:", response.status_code, response.text)
+    
+    def zoomInText(self,fontParam,fsize):
+        fsize+=2
+        fontParam.configure(size=fsize)
+    
+    def zoomOutText(self,fontParam,fsize):
+        fsize-=2
+        fontParam.configure(size=fsize)
+       
     
    
     
