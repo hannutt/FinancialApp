@@ -1,4 +1,4 @@
-Project keywords: CustomTkinter, REST-API, NoSQL, Mongo Cloud Atlas
+Project keywords: CustomTkinter, REST-API, Cloud-based NoSQL, Data processing
 
 DOCUMENTATION IS UNDER CONSTRUCTION. 
 
@@ -40,6 +40,11 @@ STOCK INFO = Retrieves data from the API based on the trading ID of the stock en
 
 SAVE = Saves the contents of the application's text box to the MongoDB cloud database used by the application
 
+DATA STORAGE OPTIONS
+
+All data retrieved from the APIs can be stored in a cloud-based Mongo NoSQL database or in a local csv file. The user can choose which method to use. When using the database option, the application connects to the Mongo Cloud atlas using the MongoClient and ServerAPI classes. In the CSV file option, the application uses Panda Dataframe methods to save the data to the file. When using the csv saving method, the application uses the customTkinter file dialog, where the user can choose the file name and the location where the file is saved.
+
+
 STOCK & CRYPTO CURRENCY INFORMATION SEARCH
 
 Stock/crypto information is searched using the stock's or crypto trading ID. For example, information on the Apple stock
@@ -56,7 +61,6 @@ The application user can also search for the latest news based on the name of th
 example picture
 
 ![alt text](images/stockCB.png)
-
 
 
 SEARCH RSS FEEDS

@@ -50,7 +50,7 @@ class App(ctk.CTk,tk.Menu):
         self.menubar.add_command(label='Cur. convert',command=lambda:self.opt.currencyWidgets())
         self.menubar.add_command(label='Exchange rate',command=lambda:self.opt.createExcWidgets())
         self.menubar.add_command(label='Give voice comm.',command=lambda:self.speechReg())
-        self.menubar.add_command(label='earnings',command=lambda:self.fetchOnlyEarningf())
+        self.menubar.add_command(label='earnings',command=lambda:self.fetchOnlyEarnings())
       
       
        
@@ -91,6 +91,8 @@ class App(ctk.CTk,tk.Menu):
         self.clearBtn.grid(row=10,column=1,pady=(10,10),sticky="w")
         self.saveBtn=ctk.CTkButton(self,text='Save',command=lambda:self.dbconn.DBsave(self.textbox.get('1.0',END)))
         self.saveBtn.grid(row=10,column=1,sticky="e")
+        self.saveToCsv=ctk.CTkCheckBox(self,text="Save to CSV file?",command=lambda:self.dbconn.CsvSave(self.textbox.get('1.0',END)))
+        self.saveToCsv.grid(row=11,column=1,sticky="w")
 
         #zoomintext metodi saa parametrina fontin tyypin (self.font) ja fontin koon (self.font._size)
         self.zoomIn=ctk.CTkButton(self,text="+",width=50,command=lambda:self.opt.zoomInText(self.font,self.font._size))
@@ -275,7 +277,7 @@ class App(ctk.CTk,tk.Menu):
         if response.status_code == requests.codes.ok:
             self.textbox.insert("end",response.text)
     
-    def fetchOnlyEarningf(self):
+    def fetchOnlyEarnings(self):
         company=self.codeEntry.get()
         api_url='https://api.api-ninjas.com/v1/earningscalendar?ticker={}'.format(self.codeEntry.get())
         response = requests.get(api_url, headers={'X-Api-Key': apk})

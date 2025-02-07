@@ -2,10 +2,14 @@
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import os
+import pandas as pd
+import customtkinter as ctk
+
 user = os.environ.get('mongoUser')
 psw=os.environ.get("mongoPsw")
 dbName=os.environ.get('dbName')
 colName=os.environ.get("colName")
+
 class DatabaseConnection():
      def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -20,6 +24,19 @@ class DatabaseConnection():
         self.collection = self.client[dbName][colName]
         self.collection.insert_one(dataDict)
         self.client.close()
+   
+     def CsvSave(self,financedata):
+         financeDataList=[]
+         financeDataList.append(financedata)
+         dataDict={'data':financeDataList}
+         df=pd.DataFrame(dataDict)
+         filename = ctk.filedialog.asksaveasfile()
+         
+       
+         df.to_csv(filename,index=False,header=False)
+         
+         
+
         
         
          
