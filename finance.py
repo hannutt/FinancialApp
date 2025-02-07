@@ -17,6 +17,7 @@ from newsapi import NewsAPI
 from PIL import Image
 from databaseConnection import DatabaseConnection
 import speech_recognition as sr
+from datetime import datetime
 
 
 #Api-avain on talletettu env-muuttujaan, tässä haetaan sen sisältämä merkkijono
@@ -41,13 +42,15 @@ class App(ctk.CTk,tk.Menu):
         self.opt=Options()
         self.news=NewsAPI()
         self.dbconn=DatabaseConnection()
-       
+        self.dTime=datetime.now().strftime("%d.%m.%Y")
+        self.epsList=[]
     
       
         #App luokan textbox voidaan lähettää  options luokalle parametria command=lambda:o.currencyWidgets(self.textbox))
         self.menubar.add_command(label='Cur. convert',command=lambda:self.opt.currencyWidgets())
         self.menubar.add_command(label='Exchange rate',command=lambda:self.opt.createExcWidgets())
         self.menubar.add_command(label='Give voice comm.',command=lambda:self.speechReg())
+        self.menubar.add_command(label='earnings',command=lambda:self.fetchOnlyEarningf())
       
       
        
@@ -271,6 +274,26 @@ class App(ctk.CTk,tk.Menu):
         response = requests.get(api_url, headers={'X-Api-Key': apk})
         if response.status_code == requests.codes.ok:
             self.textbox.insert("end",response.text)
+    
+    def fetchOnlyEarningf(self):
+        company=self.codeEntry.get()
+        api_url='https://api.api-ninjas.com/v1/earningscalendar?ticker={}'.format(self.codeEntry.get())
+        response = requests.get(api_url, headers={'X-Api-Key': apk})
+        if response.status_code == requests.codes.ok:
+            #JSON VASTAUKSESTA HAETAAN AINOASTAAN ESTIMATED_EPS KENTÄN ARVOT
+            data=json.loads(response.text)
+            for e in data:
+                eps=e["estimated_eps"]
+                self.epsList.append(eps)
+            #numeroiden järjestys min-max
+            self.epsList.sort()
+            x_pos = 0.5
+            y_pos = 3
+            plt.text(x_pos,y_pos,company)
+            plt.plot(self.epsList, marker = 'o', ms = 15, mec = '#4CAF50', mfc = '#4CAF50')
+            plt.show()
+
+
 
     def createMetals(self):
          self.preciousMenu = ctk.CTkOptionMenu(self,
@@ -311,7 +334,9 @@ class App(ctk.CTk,tk.Menu):
             print("Error:", response.status_code, response.text)
     
     def DrawGraphics(self):
-        plt.bar(self.name,self.price,width=0.5)
+        nameAndTime=f'{self.name} {self.dTime}'
+        print(nameAndTime)
+        plt.bar(nameAndTime,self.price,width=0.4)
         plt.show()
     
     def voice_stocks(self):

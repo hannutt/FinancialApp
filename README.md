@@ -72,6 +72,11 @@ CREATING GRAPHICS FROM SEARCHED VALUES
 The application uses the Matplotlib library to create graphs of, for example, stock prices searched by the user.
 A finished chart containing the name of a stock, cryptocurrency or commodity and its current value as a bar chart.
 
+The user can also create more complex stock value charts. This figure shows the next three estimated EPS numbers for Apple stock. The EPS numbers are taken from the API's JSON response and stored in a Python list.
+The Matplotlib library draws the figure based on the list values. List values ​​are sorted from smallest to largest using the Python List Sort method.
+
+![alt text](images/plotApple.png)
+
 CURRENCY CONVERT
 
 This function opens a new window with input fields currencies to be exchanged (use currency codes, e.g. GBP-AUD) and amount of currency to be exchanged. After the user has filled in the selected fields, the values ​​are sent to the Currency Conversion API.
