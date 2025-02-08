@@ -51,6 +51,8 @@ class App(ctk.CTk,tk.Menu):
         self.menubar.add_command(label='Exchange rate',command=lambda:self.opt.createExcWidgets())
         self.menubar.add_command(label='Give voice comm.',command=lambda:self.speechReg())
         self.menubar.add_command(label='earnings',command=lambda:self.fetchOnlyEarnings())
+        #self.menubar.add_command(label='email',command=lambda:self.opt.createPdf(self.textbox.get('1.0',END)))
+        self.menubar.add_command(label='email',command=lambda:self.opt.sendMail())
       
       
        
@@ -93,6 +95,8 @@ class App(ctk.CTk,tk.Menu):
         self.saveBtn.grid(row=10,column=1,sticky="e")
         self.saveToCsv=ctk.CTkCheckBox(self,text="Save to CSV file?",command=lambda:self.dbconn.CsvSave(self.textbox.get('1.0',END)))
         self.saveToCsv.grid(row=11,column=1,sticky="w")
+        self.saveToCsv=ctk.CTkCheckBox(self,text="Save to PDF file?",command=lambda:self.opt.createPdf(self.textbox.get('1.0',END)))
+        self.saveToCsv.grid(row=12,column=1,sticky="w")
 
         #zoomintext metodi saa parametrina fontin tyypin (self.font) ja fontin koon (self.font._size)
         self.zoomIn=ctk.CTkButton(self,text="+",width=50,command=lambda:self.opt.zoomInText(self.font,self.font._size))

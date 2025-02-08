@@ -27,7 +27,9 @@ class DatabaseConnection():
    
      def CsvSave(self,financedata):
          financeDataList=[]
+         #parametrina saatu textboksin sisältö talletetaan listaan, 
          financeDataList.append(financedata)
+         #dict objekti, data avaimen arvo on financedatalist
          dataDict={'data':financeDataList}
          df=pd.DataFrame(dataDict)
          filename = ctk.filedialog.asksaveasfile()

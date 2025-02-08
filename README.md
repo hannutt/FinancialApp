@@ -1,4 +1,4 @@
-Project keywords: CustomTkinter, REST-API, Cloud-based NoSQL, Data processing
+Project keywords: CustomTkinter, REST-API, Cloud-based NoSQL, Data processing, Mailtrap e-mail integration
 
 DOCUMENTATION IS UNDER CONSTRUCTION. 
 
@@ -40,9 +40,15 @@ STOCK INFO = Retrieves data from the API based on the trading ID of the stock en
 
 SAVE = Saves the contents of the application's text box to the MongoDB cloud database used by the application
 
-DATA STORAGE OPTIONS
+DATA STORAGE OPTIONS (Database,CSV,PDF)
 
-All data retrieved from the APIs can be stored in a cloud-based Mongo NoSQL database or in a local csv file. The user can choose which method to use. When using the database option, the application connects to the Mongo Cloud atlas using the MongoClient and ServerAPI classes. In the CSV file option, the application uses Panda Dataframe methods to save the data to the file. When using the csv saving method, the application uses the customTkinter file dialog, where the user can choose the file name and the location where the file is saved.
+All data retrieved from the API can be stored in a cloud-based Mongo NoSQL database or in a local csv/Pdf file. The user can choose which method to use. When using the database option, the application connects to the Mongo Cloud atlas using the MongoClient and ServerAPI classes. In the CSV file option, the application uses Panda Dataframe methods to save the data to the file. When using the csv saving method, the application uses the customTkinter file window, where the user can choose the name of the file and the storage location.
+
+In the PDF option, the file is created using the Python reportlab library.
+
+FORWARDING SAVED DATA BY E-MAIL
+
+The user can forward the saved pdf file by e-mail. The application uses the Python Mailtrap client to send emails.
 
 
 STOCK & CRYPTO CURRENCY INFORMATION SEARCH
