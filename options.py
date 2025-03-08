@@ -175,7 +175,7 @@ class Options(ctk.CTk):
     #otsikoilla.
     def getCryptos(self):
         api_url = "https://api.api-ninjas.com/v1/cryptosymbols"
-        response = requests.get(api_url, headers={'X-Api-Key': 'PaxMyj61EqrhOiBgI7yCHg==BDWXkkNweuTES9sM'})
+        response = requests.get(api_url, headers={'X-Api-Key':apk})
         if response.status_code == requests.codes.ok:
             df=pd.read_json(response.text)
             df.to_csv('crypto.csv')
