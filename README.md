@@ -50,6 +50,12 @@ FORWARDING SAVED DATA BY E-MAIL
 
 The user can forward the saved pdf file by e-mail. The application uses the Python Mailtrap client to send emails.
 
+EMAIL VALIDATION
+
+Before sending the email, the program checks that the entered email address is in the correct format. Validation is done with the API-NINJAS Validate Email API. When the user leaves the email field, the program executes a method that sends the entered email address to the Validate Email API. If the API check passes, the send button is enabled. Otherwise, the send button is disabled.
+
+![alt text](images/emailValidReady.png)
+
 
 STOCK & CRYPTO CURRENCY INFORMATION SEARCH
 
@@ -87,6 +93,3 @@ The Matplotlib library draws the figure based on the list values. List values �
 
 ![alt text](images/plotApple.png)
 
-CURRENCY CONVERT
-
-This function opens a new window with input fields currencies to be exchanged (use currency codes, e.g. GBP-AUD) and amount of currency to be exchanged. After the user has filled in the selected fields, the values ​​are sent to the Currency Conversion API.

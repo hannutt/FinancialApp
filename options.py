@@ -1,4 +1,5 @@
 import base64
+import json
 import time
 import customtkinter as ctk
 import os
@@ -138,15 +139,34 @@ class Options(ctk.CTk):
         client = mt.MailtrapClient(token=mailtrap)
         response = client.send(mail)
         print(response)
-        
-      
+    
+    #tarkistetaan sähköpostin oikea muoto validateemail Apin kutsulla
+    def emailFieldFocus(self):
+        api_url = 'https://api.api-ninjas.com/v1/validateemail?email={}'.format(self.emailEntry.get())
+        response = requests.get(api_url, headers={'X-Api-Key': apk})
+        if response.status_code == requests.codes.ok:
+              #luodaan respdict sanakirja, että saavaan talletettua avain-arvo pareja
+              respDict=json.loads(response.text)
+
+              #valid-muutujan arvoksi talletetaan sanakirjan is_valid avaimen arvo
+              self.valid = respDict.get("is_valid")
+              if self.valid==True:
+                  self.sendBtn.configure(state='enabled')
+              print(self.valid)
+        else:
+            print("Error:", response.status_code, response.text)
+       
 
     def emailOption(self):
         self.inputField=ctk.StringVar()
         self.mainComponents()
-        self.emailEntry=ctk.CTkEntry(self.topWIn,placeholder_text="email address",textvariable=self.inputField)
+        self.titleLbl=ctk.CTkLabel(self.topWIn,text="Send email with attachments")
+        self.titleLbl.grid(row=1)
+        self.emailEntry=ctk.CTkEntry(self.topWIn,placeholder_text="email address",validate="focusout",validatecommand=self.emailFieldFocus)
+        
         self.emailEntry.grid(row=2,sticky="ew")
         self.sendBtn=ctk.CTkButton(self.topWIn,text="Send",command=self.sendEmailPdf)
+        self.sendBtn.configure(state='disabled')
         self.sendBtn.grid(row=3, sticky="ew")
         #self.emailEntry.bind('<FocusOut>',self.changeSendBtnText)
       
