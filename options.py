@@ -1,4 +1,5 @@
 import base64
+from datetime import datetime
 import json
 import time
 import customtkinter as ctk
@@ -11,7 +12,7 @@ from reportlab.lib import colors
 import requests 
 from pathlib import Path
 import pandas as pd
-
+from textwrap import wrap
 apk=os.environ.get('apk')
 mailtrap=os.environ.get('mailtrap')
 
@@ -74,15 +75,20 @@ class Options(ctk.CTk):
     def zoomOutText(self,fontParam,fsize):
         fsize-=2
         fontParam.configure(size=fsize)
-    
+
+    def deliveryFont(self,font):
+        self.fontname=font
+        print(self.fontname)
+       
 
     def createPdf(self,txtparam,cbparam):
-        fileName = 'data.pdf'
+        
+        now=datetime.now()
+        current_time = now.strftime("%H%M%S")
+        fileName = 'data'+current_time+'.pdf'
         documentTitle = 'Data'
         title = 'Saved Data'
        
-        textLines = []
-        textLines.append(txtparam)
         pdf = canvas.Canvas(fileName) 
         pdf.setTitle(documentTitle) 
         pdf.setFont("Courier-Bold", 24) 
@@ -92,15 +98,17 @@ class Options(ctk.CTk):
         pdf.line(30, 710, 550, 710) 
   
         #tekstin lisääminen pdf-tiedostoon
-        text = pdf.beginText(40, 680) 
-        text.setFont("Courier", 18) 
-        text.setFillColor(colors.black) 
-  
-        for line in textLines: 
-            text.textLine(line) 
+        text = pdf.beginText(40, 680)
+       
+        text.setFont(self.fontname,14)
       
+        text.setFillColor(colors.black)
+        #wrapilla saadaan koko teksti tiedostoon wrap myös pilkkoo tekstin riveiksi. 
+        wraped_text = "\n".join(wrap(txtparam, 60)) # 60 is line width
+        text.textLines(wraped_text)
         pdf.drawText(text) 
         pdf.save()
+        
         #poistetaan checkboksin valinta 5 sekunnin jälkeen 
         time.sleep(5)
         cbparam.deselect()

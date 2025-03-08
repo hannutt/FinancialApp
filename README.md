@@ -44,7 +44,7 @@ DATA STORAGE OPTIONS (Database,CSV,PDF)
 
 All data retrieved from the API can be stored in a cloud-based Mongo NoSQL database or in a local csv/Pdf file. The user can choose which method to use. When using the database option, the application connects to the Mongo Cloud atlas using the MongoClient and ServerAPI classes. In the CSV file option, the application uses Panda Dataframe methods to save the data to the file. When using the csv saving method, the application uses the customTkinter file window, where the user can choose the name of the file and the storage location.
 
-In the PDF option, the file is created using the Python reportlab library.
+In the PDF option, the file is created using the Python reportlab library. The user can select the font they want to use for the text saved in the PDF file from the drop-down menu. Currently available fonts are Courier, Times New Roman, and Helvetica.
 
 FORWARDING SAVED DATA BY E-MAIL
 

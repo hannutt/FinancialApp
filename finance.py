@@ -96,6 +96,10 @@ class App(ctk.CTk,tk.Menu):
         self.saveToCsv.grid(row=11,column=1,sticky="w")
         self.saveToCsv=ctk.CTkCheckBox(self,text="Save to PDF file?",command=lambda:self.opt.createPdf(self.textbox.get('1.0',END),self.saveToCsv))
         self.saveToCsv.grid(row=12,column=1,sticky="w")
+        self.fontMenu = ctk.CTkOptionMenu(self,
+                                        values=['Courier',"Helvetica","Times-Roman"],width=100,command=self.opt.deliveryFont)
+        self.fontMenu.grid(row=13, column=1,sticky="w")
+        self.fontMenu.set("Courier")
 
         #zoomintext metodi saa parametrina fontin tyypin (self.font) ja fontin koon (self.font._size)
         self.zoomIn=ctk.CTkButton(self,text="+",width=50,command=lambda:self.opt.zoomInText(self.font,self.font._size))
