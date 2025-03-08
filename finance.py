@@ -35,7 +35,7 @@ class App(ctk.CTk,tk.Menu):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.font = ctk.CTkFont(family="Times", size=14)
-        self.words=['Crypto','Stocks','Precious metals']
+        self.words=['Crypto','Stocks','Precious metals','Commodities']
         self.title("Finance App")
         self.menubar=tk.Menu(self)
         self.config(menu=self.menubar)
@@ -51,8 +51,7 @@ class App(ctk.CTk,tk.Menu):
         self.menubar.add_command(label='Exchange rate',command=lambda:self.opt.createExcWidgets())
         self.menubar.add_command(label='Give voice comm.',command=lambda:self.speechReg())
         self.menubar.add_command(label='earnings',command=lambda:self.fetchOnlyEarnings())
-        #self.menubar.add_command(label='email',command=lambda:self.opt.createPdf(self.textbox.get('1.0',END)))
-        self.menubar.add_command(label='email',command=lambda:self.opt.sendMail())
+        self.menubar.add_command(label='email',command=lambda:self.opt.emailOption())
       
       
        
@@ -95,7 +94,7 @@ class App(ctk.CTk,tk.Menu):
         self.saveBtn.grid(row=10,column=1,sticky="e")
         self.saveToCsv=ctk.CTkCheckBox(self,text="Save to CSV file?",command=lambda:self.dbconn.CsvSave(self.textbox.get('1.0',END)))
         self.saveToCsv.grid(row=11,column=1,sticky="w")
-        self.saveToCsv=ctk.CTkCheckBox(self,text="Save to PDF file?",command=lambda:self.opt.createPdf(self.textbox.get('1.0',END)))
+        self.saveToCsv=ctk.CTkCheckBox(self,text="Save to PDF file?",command=lambda:self.opt.createPdf(self.textbox.get('1.0',END),self.saveToCsv))
         self.saveToCsv.grid(row=12,column=1,sticky="w")
 
         #zoomintext metodi saa parametrina fontin tyypin (self.font) ja fontin koon (self.font._size)
@@ -171,16 +170,21 @@ class App(ctk.CTk,tk.Menu):
             if self.choice=="Stocks":
                 self.earnings.grid(row=6,column=1,sticky="W")
                 self.newsAboutComp.grid(row=6,column=1,sticky="E")
-            if self.choice=="Precious metals":
+            elif self.choice=="Precious metals":
                 self.createMetals()
+            elif self.choice=="Crypto":
+                self.cryptoCsv=ctk.CTkCheckBox(self,text="Save cryptos to CSV",command=lambda:self.opt.getCryptos())
+                self.cryptoCsv.grid(row=6,column=1,sticky="E")
             
-        elif self.choice=="Commodities":
-            self.createCommodity()    
+            elif self.choice=="Commodities":
+                self.codeEntry.grid_forget()
+                self.createCommodity()    
         else:
             #piilottaa gridit
             self.codeEntry.grid_forget()
             self.earnings.grid_forget()
             self.preciousMenu.grid_forget()
+            self.cryptoCsv.grid_forget()
             
             #muutetaan buttonin tekstiä configuren avulla
             self.getBtn.configure(text="Get " +self.choice+" data")

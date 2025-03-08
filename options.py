@@ -1,4 +1,5 @@
 import base64
+import time
 import customtkinter as ctk
 import os
 import mailtrap as mt
@@ -8,7 +9,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.lib import colors
 import requests 
 from pathlib import Path
-
+import pandas as pd
 
 apk=os.environ.get('apk')
 mailtrap=os.environ.get('mailtrap')
@@ -74,7 +75,7 @@ class Options(ctk.CTk):
         fontParam.configure(size=fsize)
     
 
-    def createPdf(self,txtparam):
+    def createPdf(self,txtparam,cbparam):
         fileName = 'data.pdf'
         documentTitle = 'Data'
         title = 'Saved Data'
@@ -98,35 +99,70 @@ class Options(ctk.CTk):
             text.textLine(line) 
       
         pdf.drawText(text) 
-        pdf.save() 
-        #self.sendMail()
-  
+        pdf.save()
+        #poistetaan checkboksin valinta 5 sekunnin jälkeen 
+        time.sleep(5)
+        cbparam.deselect()
+    
+   
+    def changeSendBtnText(self):
+        newtext=self.emailEntry.get()
+        print(newtext)
+        #self.sendBtn.configure(text="Send to "+newtext)
+      
+        #self.sendBtn.configure(text="send to "+newtext)
+       
 
-    def sendMail(self):
-        datafile = Path(__file__).parent.joinpath("data.pdf").read_bytes()
-        
+    def sendEmailPdf(self):
+        #tiedostodialogi, valittu tiedosto polkuineen talletetaan pdfFile muuttujaan.
+        pdfFile=ctk.filedialog.askopenfilename()
+        #tiedoston muunto biteiksi
+        datafile = Path(__file__).parent.joinpath(pdfFile).read_bytes()
         mail = mt.Mail(
             sender=mt.Address(email="hello@demomailtrap.com", name="Mailtrap Test"),
-            to=[mt.Address(email="")],
+            to=[mt.Address(email=self.emailEntry.get())],
             subject="Data you saved",
             text="pdf is in attachment!",
             category="Finance app function",
         attachments=[
+
         mt.Attachment(
             content=base64.b64encode(datafile),
-            filename="data.pdf",
+            filename=pdfFile,
             disposition=mt.Disposition.INLINE,
             mimetype="application/pdf",
-            content_id="data.pdf",
+            content_id=pdfFile,
         )
     ],    
     )
-      
-
         client = mt.MailtrapClient(token=mailtrap)
         response = client.send(mail)
         print(response)
+        
       
+
+    def emailOption(self):
+        self.inputField=ctk.StringVar()
+        self.mainComponents()
+        self.emailEntry=ctk.CTkEntry(self.topWIn,placeholder_text="email address",textvariable=self.inputField)
+        self.emailEntry.grid(row=2,sticky="ew")
+        self.sendBtn=ctk.CTkButton(self.topWIn,text="Send",command=self.sendEmailPdf)
+        self.sendBtn.grid(row=3, sticky="ew")
+        #self.emailEntry.bind('<FocusOut>',self.changeSendBtnText)
+      
+
+    #haeetaan apista kaikki krypto tunnukset ja talletetaan ne csv-tiedostoon muodossa yksi symboli/rivi + symbols ja timestamp
+    #otsikoilla.
+    def getCryptos(self):
+        api_url = "https://api.api-ninjas.com/v1/cryptosymbols"
+        response = requests.get(api_url, headers={'X-Api-Key': 'PaxMyj61EqrhOiBgI7yCHg==BDWXkkNweuTES9sM'})
+        if response.status_code == requests.codes.ok:
+            df=pd.read_json(response.text)
+            df.to_csv('crypto.csv')
+            
+        else:
+            print("Error:", response.status_code, response.text)
+   
    
 
        

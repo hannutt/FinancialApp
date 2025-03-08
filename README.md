@@ -64,9 +64,9 @@ FIND NEWS BY STOCK / CRYPTO / COMMODITY NAME
 
 The application user can also search for the latest news based on the name of the stock, cryptocurrency or commodity of her choice by clicking on the "News" checkbox. This feature uses the Newsapi.org API to which the user-supplied keyword is passed as a parameter.
 
-example picture
+Example image where a user searches for news from NewsAPI using a Microsoft keyword. The program displays the news in relevant order using the 'relevancy' parameter in the API call sent to NewsApi.
 
-![alt text](images/stockCB.png)
+![alt text](images/newsMicrosoft.png)
 
 
 SEARCH RSS FEEDS
