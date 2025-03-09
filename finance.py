@@ -36,7 +36,7 @@ class App(ctk.CTk,tk.Menu):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.font = ctk.CTkFont(family="Times", size=14)
-        self.words=['Crypto','Stocks','Precious metals','Commodities']
+        self.words=['Crypto','Stocks','Precious metals','Commodities','History']
         self.title("Finance App")
         self.menubar=tk.Menu(self)
         self.config(menu=self.menubar)
@@ -72,7 +72,7 @@ class App(ctk.CTk,tk.Menu):
         
         #pudotusvalikko
         self.optMenu = ctk.CTkOptionMenu(self,
-                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','Business news'],command=self.optionmenu_callback,width=200)
+                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','History'],command=self.optionmenu_callback,width=200)
         self.optMenu.grid(row=3, column=1, pady=10,columnspan=1, sticky="w")
 
         self.codeEntry = ctk.CTkEntry(self,placeholder_text="crypto/stock code",textvariable=self.inputField,validate="focusout", validatecommand=self.showInput)
@@ -80,7 +80,7 @@ class App(ctk.CTk,tk.Menu):
         self.earnings=ctk.CTkCheckBox(self,text="Show earnings?", onvalue="on", offvalue="off", variable=self.earningsSV)
         self.newsAboutComp=ctk.CTkCheckBox(self,text="News?",command=lambda:self.news.companyNews(self.codeEntry.get(),self.textbox))
         
-        self.createStockBars=ctk.CTkCheckBox(self,text="Bars",command=lambda:self.ms.showEod(self.codeEntry.get()))
+        self.createStockBars=ctk.CTkCheckBox(self,text="EOD data",command=lambda:self.ms.showEod(self.codeEntry.get()))
 
         self.getBtn=ctk.CTkButton(self,text="Get data",command=self.selectMethods,width=200)
         self.getBtn.grid(row=7,column=1,columnspan=3,sticky="w",pady=10)
@@ -184,8 +184,19 @@ class App(ctk.CTk,tk.Menu):
                 self.cryptoCsv.grid(row=6,column=1,sticky="E")
             
             elif self.choice=="Commodities":
+                
                 self.codeEntry.grid_forget()
-                self.createCommodity()    
+                self.createCommodity()
+
+            elif self.choice=="History":
+                self.codeEntry.grid(row=5, column=1,sticky="W")
+                self.historyCB=ctk.CTkCheckBox(self,text="Get history",command=lambda:self.ms.historicalData(self.codeEntry.get(),self.textbox,self.fromDate.get(),self.toDate.get()))
+                self.historyCB.grid(row=5,column=1,sticky="E")
+                self.fromDate=ctk.CTkEntry(self,placeholder_text="FROM (YYYY-MM-DD)")
+                self.fromDate.grid(row=6,column=1,sticky="W")
+                self.toDate=ctk.CTkEntry(self,placeholder_text="TO (YYYY-MM-DD)")
+                self.toDate.grid(row=6,column=1,sticky="E")
+                self.getBtn.grid_forget()
         else:
             #piilottaa gridit
             self.codeEntry.grid_forget()

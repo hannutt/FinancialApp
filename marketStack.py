@@ -12,15 +12,18 @@ class MarketStack():
         self.values=[]
 
     
-     def historicalDividends(self):
-         api_url=f"http://api.marketstack.com/v2/eod?access_key={msApk}&symbols=AAPL&date_from = 2025-02-27& date_to = 2025-03-09"
+     def historicalData(self,ticker,tbox,fromDate,toDate):
+         api_url=f"http://api.marketstack.com/v2/eod?access_key={msApk}&symbols={ticker}&date_from={fromDate}&date_to={toDate}"
          response=requests.get(api_url)
-         print(response.json())
+         respDict=json.loads(response.text)
+         for r in respDict: 
+            tbox.insert("end",respDict[r])
+            tbox.insert("end","\n")
 
      def showEod(self,stockname):
          labels=['Lowest','Highest','Open','Close']
          
-         api_url=f'http://api.marketstack.com/v2/eod?access_key={msApk}&symbols={stockname}'
+         api_url=f'http://api.marketstack.com/v2/eod/latest?access_key={msApk}&symbols={stockname}'
          response=requests.get(api_url)
          data=json.loads(response.text)
          #data hakasuluissa json-tuloksen taulukon nimi low ja high ovat avain-arvo pareja
@@ -30,7 +33,9 @@ class MarketStack():
              openVal=d['open']
              close=d['close']
              name=d['symbol']
-         nameStr=name+' Stock'
+             dtime=d['date']
+             dtimerep=dtime.replace("T"," ")
+         nameStr=name+' Stock '+dtimerep
          self.values.append(low)
          self.values.append(high)
          self.values.append(openVal)
@@ -39,6 +44,10 @@ class MarketStack():
          plt.title(nameStr)
          plt.barh(labels,self.values)
          plt.show()
+
+     
+       
+
         
          
       
