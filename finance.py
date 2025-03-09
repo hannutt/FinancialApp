@@ -55,7 +55,7 @@ class App(ctk.CTk,tk.Menu):
         self.menubar.add_command(label='Give voice comm.',command=lambda:self.speechReg())
         self.menubar.add_command(label='earnings',command=lambda:self.fetchOnlyEarnings())
         self.menubar.add_command(label='email',command=lambda:self.opt.emailOption())
-        self.menubar.add_command(label='ms',command=lambda:self.ms.showEod())
+        
           
         #self.add_cascade()
         self.graph=False
@@ -80,6 +80,8 @@ class App(ctk.CTk,tk.Menu):
         self.earnings=ctk.CTkCheckBox(self,text="Show earnings?", onvalue="on", offvalue="off", variable=self.earningsSV)
         self.newsAboutComp=ctk.CTkCheckBox(self,text="News?",command=lambda:self.news.companyNews(self.codeEntry.get(),self.textbox))
         
+        self.createStockBars=ctk.CTkCheckBox(self,text="Bars",command=lambda:self.ms.showEod(self.codeEntry.get()))
+
         self.getBtn=ctk.CTkButton(self,text="Get data",command=self.selectMethods,width=200)
         self.getBtn.grid(row=7,column=1,columnspan=3,sticky="w",pady=10)
         self.textbox=ctk.CTkTextbox(self,width=200,corner_radius=5,height=105,font=self.font)
@@ -173,6 +175,7 @@ class App(ctk.CTk,tk.Menu):
             if self.choice=="Stocks":
                 self.earnings.grid(row=6,column=1,sticky="W")
                 self.newsAboutComp.grid(row=6,column=1,sticky="E")
+                self.createStockBars.grid(row=6,column=2)
             elif self.choice=="Precious metals":
                 self.createMetals()
             elif self.choice=="Crypto":

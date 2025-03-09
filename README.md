@@ -93,3 +93,7 @@ The Matplotlib library draws the figure based on the list values. List values â€
 
 ![alt text](images/plotApple.png)
 
+Another example where the user has retrieved Microsoft stock data (opening price, lowest price, highest price, and closing price) from the MarketStack API and the program visualizes the data in a vertical bar chart.
+
+![alt text](images/eodData.png)
+
