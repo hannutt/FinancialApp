@@ -19,6 +19,7 @@ mailtrap=os.environ.get('mailtrap')
 class Options(ctk.CTk):
     def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fontChanged=False
 
     def mainComponents(self):
         self.topWIn=ctk.CTkToplevel()
@@ -77,8 +78,8 @@ class Options(ctk.CTk):
         fontParam.configure(size=fsize)
 
     def deliveryFont(self,font):
+        self.fontChanged=True
         self.fontname=font
-        print(self.fontname)
        
 
     def createPdf(self,txtparam,cbparam):
@@ -99,8 +100,10 @@ class Options(ctk.CTk):
   
         #tekstin lisääminen pdf-tiedostoon
         text = pdf.beginText(40, 680)
-       
-        text.setFont(self.fontname,14)
+        if self.fontChanged:
+            text.setFont(self.fontname,14)
+        else:
+            text.setFont("Courier",14)
       
         text.setFillColor(colors.black)
         #wrapilla saadaan koko teksti tiedostoon wrap myös pilkkoo tekstin riveiksi. 

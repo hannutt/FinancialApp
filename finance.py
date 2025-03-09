@@ -14,6 +14,7 @@ from tkinter.ttk import *
 import tkinter as tk
 from options import Options
 from newsapi import NewsAPI
+from marketStack import MarketStack
 from PIL import Image
 from databaseConnection import DatabaseConnection
 import speech_recognition as sr
@@ -42,6 +43,8 @@ class App(ctk.CTk,tk.Menu):
         self.opt=Options()
         self.news=NewsAPI()
         self.dbconn=DatabaseConnection()
+        self.ms=MarketStack()
+        
         self.dTime=datetime.now().strftime("%d.%m.%Y")
         self.epsList=[]
     
@@ -52,10 +55,8 @@ class App(ctk.CTk,tk.Menu):
         self.menubar.add_command(label='Give voice comm.',command=lambda:self.speechReg())
         self.menubar.add_command(label='earnings',command=lambda:self.fetchOnlyEarnings())
         self.menubar.add_command(label='email',command=lambda:self.opt.emailOption())
-      
-      
-       
-        
+        self.menubar.add_command(label='ms',command=lambda:self.ms.showEod())
+          
         #self.add_cascade()
         self.graph=False
         self.inputField=ctk.StringVar()
@@ -78,6 +79,7 @@ class App(ctk.CTk,tk.Menu):
         self.earningsSV=ctk.StringVar()
         self.earnings=ctk.CTkCheckBox(self,text="Show earnings?", onvalue="on", offvalue="off", variable=self.earningsSV)
         self.newsAboutComp=ctk.CTkCheckBox(self,text="News?",command=lambda:self.news.companyNews(self.codeEntry.get(),self.textbox))
+        
         self.getBtn=ctk.CTkButton(self,text="Get data",command=self.selectMethods,width=200)
         self.getBtn.grid(row=7,column=1,columnspan=3,sticky="w",pady=10)
         self.textbox=ctk.CTkTextbox(self,width=200,corner_radius=5,height=105,font=self.font)
@@ -141,9 +143,6 @@ class App(ctk.CTk,tk.Menu):
         except:
              print("error")
 
-    
-  
-
     def clearTextBox(self):
         self.textbox.delete("0.0","end")
         self.klRss.deselect()
@@ -178,6 +177,7 @@ class App(ctk.CTk,tk.Menu):
                 self.createMetals()
             elif self.choice=="Crypto":
                 self.cryptoCsv=ctk.CTkCheckBox(self,text="Save cryptos to CSV",command=lambda:self.opt.getCryptos())
+                self.newsAboutComp.grid(row=6,column=1,sticky="W")
                 self.cryptoCsv.grid(row=6,column=1,sticky="E")
             
             elif self.choice=="Commodities":
@@ -276,12 +276,10 @@ class App(ctk.CTk,tk.Menu):
                 
                     self.textbox.insert('end',respDict[r])
                     self.textbox.insert('end',"\n")
-                '''
-          
+                '''    
                 self.valueCB.grid(row=11,column=1,columnspan=3)
                 self.valueCB.configure(text=self.name+" Graphics")
-          
-    
+             
     def fetchEarnings(self):
 
         api_url='https://api.api-ninjas.com/v1/earningscalendar?ticker={}'.format(self.codeEntry.get())

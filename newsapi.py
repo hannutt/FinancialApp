@@ -7,7 +7,7 @@ class NewsAPI():
     def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def businessNews(self,keyword,tbox):
+    def cryptoNews(self,keyword,tbox):
         pass
         # https://newsapi.org/v2/everything?q=Apple&from=2025-02-05&sortBy=popularity&apiKey=API_KEY
        
