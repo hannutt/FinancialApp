@@ -26,10 +26,6 @@ class Options(ctk.CTk):
         self.textbox=ctk.CTkTextbox(self.topWIn)
         self.topWIn.geometry('250x250')
         
-    
-        
-
-        
     def currencyWidgets(self):
         self.mainComponents()
         self.curLbl=ctk.CTkLabel(self.topWIn,text="Currency convert")
@@ -80,6 +76,10 @@ class Options(ctk.CTk):
     def deliveryFont(self,font):
         self.fontChanged=True
         self.fontname=font
+    
+    def deliveryFontSize(self,fsize):
+        fsize=int(fsize)
+        self.fsize=fsize
        
 
     def createPdf(self,txtparam,cbparam):
@@ -101,7 +101,7 @@ class Options(ctk.CTk):
         #tekstin lisääminen pdf-tiedostoon
         text = pdf.beginText(40, 680)
         if self.fontChanged:
-            text.setFont(self.fontname,14)
+            text.setFont(self.fontname,self.fsize)
         else:
             text.setFont("Courier",14)
       
@@ -163,7 +163,7 @@ class Options(ctk.CTk):
               self.valid = respDict.get("is_valid")
               if self.valid==True:
                   self.sendBtn.configure(state='enabled')
-              print(self.valid)
+             
         else:
             print("Error:", response.status_code, response.text)
        

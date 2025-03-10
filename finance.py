@@ -36,7 +36,7 @@ class App(ctk.CTk,tk.Menu):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.font = ctk.CTkFont(family="Times", size=14)
-        self.words=['Crypto','Stocks','Precious metals','Commodities','History']
+        self.words=['Crypto','Stocks','Precious metals','Commodities','History','Finance Dictionary']
         self.title("Finance App")
         self.menubar=tk.Menu(self)
         self.config(menu=self.menubar)
@@ -72,7 +72,7 @@ class App(ctk.CTk,tk.Menu):
         
         #pudotusvalikko
         self.optMenu = ctk.CTkOptionMenu(self,
-                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','History'],command=self.optionmenu_callback,width=200)
+                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','History','Finance Dictionary'],command=self.optionmenu_callback,width=200)
         self.optMenu.grid(row=3, column=1, pady=10,columnspan=1, sticky="w")
 
         self.codeEntry = ctk.CTkEntry(self,placeholder_text="crypto/stock code",textvariable=self.inputField,validate="focusout", validatecommand=self.showInput)
@@ -103,7 +103,10 @@ class App(ctk.CTk,tk.Menu):
         self.fontMenu = ctk.CTkOptionMenu(self,
                                         values=['Courier',"Helvetica","Times-Roman"],width=100,command=self.opt.deliveryFont)
         self.fontMenu.grid(row=13, column=1,sticky="w")
-        self.fontMenu.set("Courier")
+        #self.fontMenu.set("Courier")
+
+        self.fontSizeMenu=ctk.CTkOptionMenu(self,values=['12','14','16','18','20'], width=100, command=self.opt.deliveryFontSize)
+        self.fontSizeMenu.grid(row=13,column=1,sticky="E")
 
         #zoomintext metodi saa parametrina fontin tyypin (self.font) ja fontin koon (self.font._size)
         self.zoomIn=ctk.CTkButton(self,text="+",width=50,command=lambda:self.opt.zoomInText(self.font,self.font._size))
@@ -197,6 +200,15 @@ class App(ctk.CTk,tk.Menu):
                 self.toDate=ctk.CTkEntry(self,placeholder_text="TO (YYYY-MM-DD)")
                 self.toDate.grid(row=6,column=1,sticky="E")
                 self.getBtn.grid_forget()
+            elif self.choice=="Finance Dictionary":
+                self.codeEntry.grid_forget()
+                self.getBtn.grid_forget()
+                self.getTermBtn=ctk.CTkButton(self,text='Get data',command=lambda:self.dbconn.getData(self.textbox))
+                self.getTermBtn.grid(row=5,column=1,sticky="E")
+                self.financeDict=ctk.CTkOptionMenu(self,values=['Select','p/e','eps'],command=self.dbconn.getFinanceTerm)
+                self.financeDict.grid(row=5,column=1,sticky="W")
+                
+                
         else:
             #piilottaa gridit
             self.codeEntry.grid_forget()

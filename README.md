@@ -1,7 +1,5 @@
 Project keywords: CustomTkinter, REST-API, Cloud-based NoSQL, Data processing, Mailtrap e-mail integration
 
-DOCUMENTATION IS UNDER CONSTRUCTION. 
-
 ABOUT THE APPLICATION
 
 The idea behind the application is to provide the user with various financial information such as information on stocks, 
@@ -44,7 +42,7 @@ DATA STORAGE OPTIONS (Database,CSV,PDF)
 
 All data retrieved from the API can be stored in a cloud-based Mongo NoSQL database or in a local csv/Pdf file. The user can choose which method to use. When using the database option, the application connects to the Mongo Cloud atlas using the MongoClient and ServerAPI classes. In the CSV file option, the application uses Panda Dataframe methods to save the data to the file. When using the csv saving method, the application uses the customTkinter file window, where the user can choose the name of the file and the storage location.
 
-In the PDF option, the file is created using the Python reportlab library. The user can select the font they want to use for the text saved in the PDF file from the drop-down menu. Currently available fonts are Courier, Times New Roman, and Helvetica. The default font is Courier and is used for text unless the user changes the font.
+In the PDF option, the file is created using the Python reportlab library. The user can select the font they want to use for the text saved in the PDF file from the drop-down menu. Currently available fonts are Courier, Times New Roman, and Helvetica. The default font is Courier and is used for text unless the user changes the font. You can also change the font size between 12-20 pixels.
 
 FORWARDING SAVED DATA BY E-MAIL
 
@@ -104,3 +102,12 @@ The user can search for historical data for the stocks of their choice. The appl
 Example image of a user searching for historical data on Microsoft stock between January 7th and January 10th.
 
 ![alt text](images/msftHistory.png)
+
+FINANCE DICTIONARY
+
+This feature includes common investment words such as p/e ratio, eps ratio, etc.
+The feature is used by selecting the desired word from the drop-down menu for which you want an explanation. The explanations corresponding to the word are stored in the cloud-based NoSQL database used by the program and are retrieved according to the user's selections.
+
+Example image where the user has searched the database for an explanation of the term P/E
+
+![alt text](images/financeDict.png)

@@ -9,6 +9,7 @@ user = os.environ.get('mongoUser')
 psw=os.environ.get("mongoPsw")
 dbName=os.environ.get('dbName')
 colName=os.environ.get("colName")
+fdCol=os.environ.get('fdName')
 
 class DatabaseConnection():
      def __init__(self,*args, **kwargs):
@@ -24,6 +25,21 @@ class DatabaseConnection():
         self.collection = self.client[dbName][colName]
         self.collection.insert_one(dataDict)
         self.client.close()
+      
+     def getFinanceTerm(self,term):
+         self.term=term
+              
+      
+     def getData(self,tbox):
+          
+          self.uri="mongodb+srv://{}:{}@cluster0.gfnzlpq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0".format(user,psw)
+          self.client = MongoClient(self.uri, server_api=ServerApi('1'))
+          self.collection = self.client[dbName][fdCol]
+          self.query={"key":self.term}
+          self.doc=self.collection.find(self.query)
+          for d in self.doc:
+              tbox.insert("end",d)
+
    
      def CsvSave(self,financedata):
          financeDataList=[]
