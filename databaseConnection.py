@@ -35,8 +35,9 @@ class DatabaseConnection():
           self.uri="mongodb+srv://{}:{}@cluster0.gfnzlpq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0".format(user,psw)
           self.client = MongoClient(self.uri, server_api=ServerApi('1'))
           self.collection = self.client[dbName][fdCol]
-          self.query={"key":self.term}
-          self.doc=self.collection.find(self.query)
+          #haku siten, että self.term muuttuja vastaa kokoelman key kenttää, tuloksesta poistetaan _id ja key kentät,
+          #vain txt kenttä näytetään
+          self.doc=self.collection.find({"key":self.term},{"_id":0,"key":0})
           for d in self.doc:
               tbox.insert("end",d)
 

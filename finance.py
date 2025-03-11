@@ -36,7 +36,7 @@ class App(ctk.CTk,tk.Menu):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.font = ctk.CTkFont(family="Times", size=14)
-        self.words=['Crypto','Stocks','Precious metals','Commodities','History','Finance Dictionary']
+        self.words=['Crypto','Stocks','Precious metals','Commodities','History','Finance Dictionary','Inflation']
         self.title("Finance App")
         self.menubar=tk.Menu(self)
         self.config(menu=self.menubar)
@@ -71,9 +71,14 @@ class App(ctk.CTk,tk.Menu):
         self.appimageLbl.grid(row=2,column=1,sticky="e")
         
         #pudotusvalikko
+        self.preciousMenu = ctk.CTkOptionMenu(self,
+                                        values=["Gold"],command=self.gold_callback)
         self.optMenu = ctk.CTkOptionMenu(self,
-                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','History','Finance Dictionary'],command=self.optionmenu_callback,width=200)
+                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','History','Finance Dictionary','Inflation'],command=self.optionmenu_callback,width=200)
         self.optMenu.grid(row=3, column=1, pady=10,columnspan=1, sticky="w")
+
+        self.comMenu = ctk.CTkOptionMenu(self,
+                                        values=["Oat","Platinum",'Gold','Palladium'],command=self.commodity_callback)
 
         self.codeEntry = ctk.CTkEntry(self,placeholder_text="crypto/stock code",textvariable=self.inputField,validate="focusout", validatecommand=self.showInput)
         self.earningsSV=ctk.StringVar()
@@ -81,6 +86,7 @@ class App(ctk.CTk,tk.Menu):
         self.newsAboutComp=ctk.CTkCheckBox(self,text="News?",command=lambda:self.news.companyNews(self.codeEntry.get(),self.textbox))
         
         self.createStockBars=ctk.CTkCheckBox(self,text="EOD data",command=lambda:self.ms.showEod(self.codeEntry.get()))
+        self.dividends=ctk.CTkCheckBox(self,text="Dividends",command=lambda:self.ms.getDividends(self.codeEntry.get(),self.textbox))
 
         self.getBtn=ctk.CTkButton(self,text="Get data",command=self.selectMethods,width=200)
         self.getBtn.grid(row=7,column=1,columnspan=3,sticky="w",pady=10)
@@ -109,6 +115,8 @@ class App(ctk.CTk,tk.Menu):
         self.fontSizeMenu.grid(row=13,column=1,sticky="E")
 
         #zoomintext metodi saa parametrina fontin tyypin (self.font) ja fontin koon (self.font._size)
+        self.tts=ctk.CTkButton(self,text="TTS",command=lambda:self.opt.convertTts(self.textbox.get('1.0',END)))
+        self.tts.grid(row=8,column=2)
         self.zoomIn=ctk.CTkButton(self,text="+",width=50,command=lambda:self.opt.zoomInText(self.font,self.font._size))
         self.zoomIn.grid(row=9,column=2,padx=10)
         self.zoomOut=ctk.CTkButton(self,text="-",width=50,command=lambda:self.opt.zoomOutText(self.font,self.font._size))
@@ -154,11 +162,12 @@ class App(ctk.CTk,tk.Menu):
         self.invRss.deselect()
         self.writeUrl.deselect()
 
+    #käyttäjän antama rss-syötteen osoite
     def showInput(self):
         if self.wUrl.get()=="on":
 
             self.urlInput=ctk.CTkEntry(self)
-            self.urlInput.grid(row=7,column=8,columnspan=3)
+            self.urlInput.grid(row=3,column=7,sticky="EW")
             #focuosut eventin ja metodin sitominen toisiinsa.
             self.urlInput.bind('<FocusOut>',self.inputFocusOut)
         else:
@@ -174,11 +183,12 @@ class App(ctk.CTk,tk.Menu):
         self.choice=choice
         #tarkistus, onko valittu arvo words-listassa
         if self.choice in self.words:
-            self.codeEntry.grid(row=5, column=1,columnspan=1, padx=20,pady=20, sticky="ew")
+            self.codeEntry.grid(row=5, column=1, sticky="ew")
             if self.choice=="Stocks":
                 self.earnings.grid(row=6,column=1,sticky="W")
                 self.newsAboutComp.grid(row=6,column=1,sticky="E")
-                self.createStockBars.grid(row=6,column=2)
+                self.createStockBars.grid(row=6,column=2,sticky="E")
+                self.dividends.grid(row=6,column=3,sticky="E")
             elif self.choice=="Precious metals":
                 self.createMetals()
             elif self.choice=="Crypto":
@@ -205,8 +215,13 @@ class App(ctk.CTk,tk.Menu):
                 self.getBtn.grid_forget()
                 self.getTermBtn=ctk.CTkButton(self,text='Get data',command=lambda:self.dbconn.getData(self.textbox))
                 self.getTermBtn.grid(row=5,column=1,sticky="E")
-                self.financeDict=ctk.CTkOptionMenu(self,values=['Select','p/e','eps'],command=self.dbconn.getFinanceTerm)
+                self.financeDict=ctk.CTkOptionMenu(self,values=['Select','p/e','eps','adr','bear market'],command=self.dbconn.getFinanceTerm)
                 self.financeDict.grid(row=5,column=1,sticky="W")
+            elif choice=="Inflation":
+                self.getBtn.grid_forget()
+                self.getInflationBtn=ctk.CTkButton(self,text="Get inflation",command=lambda:self.ms.getInflation(self.codeEntry.get(),self.textbox))
+                self.getInflationBtn.grid(row=7,column=1,columnspan=3,sticky="w",pady=10)
+                self.codeEntry.grid(row=5, column=1, sticky="ew")
                 
                 
         else:
@@ -214,7 +229,15 @@ class App(ctk.CTk,tk.Menu):
             self.codeEntry.grid_forget()
             self.earnings.grid_forget()
             self.preciousMenu.grid_forget()
+            self.comMenu.grid_forget()
+            
+            self.newsAboutComp.grid_forget()
+            self.createStockBars.grid_forget()
             self.cryptoCsv.grid_forget()
+            '''
+            if exists==1:
+                self.cryptoCsv.grid_forget()
+            '''
             
             #muutetaan buttonin tekstiä configuren avulla
             self.getBtn.configure(text="Get " +self.choice+" data")
@@ -231,6 +254,12 @@ class App(ctk.CTk,tk.Menu):
                 self.textbox.insert('end',"\n")
              self.price = respDict.get("price")
              self.name=respDict.get("name")
+            #unix timestampin muunto luettavaksi päivämääräksi
+             utime=respDict.get("updated")
+             utimeInt=int(utime)
+             datetimesStr=datetime.fromtimestamp(utimeInt).strftime('%d-%m-%Y %H:%M:%S')
+             self.textbox.insert("end",datetimesStr)
+          
              self.valueCB.grid(row=11,column=1,columnspan=3)
              self.valueCB.configure(text=self.name+" Graphics")     
         else:
@@ -274,12 +303,14 @@ class App(ctk.CTk,tk.Menu):
             self.fetchData()
             self.fetchEarnings()
         elif self.choice=="Stocks":
+           
             self.fetchData()
         elif self.choice=="Crypto":
             self.fetchCryptoData()
         
 
     def fetchData(self):
+            
             #self.codeEntry.get() = tekstikentän sisältö
             api_url = 'https://api.api-ninjas.com/v1/stockprice?ticker={}'.format(self.codeEntry.get())
             response = requests.get(api_url, headers={'X-Api-Key': apk})
@@ -297,12 +328,7 @@ class App(ctk.CTk,tk.Menu):
                 self.textbox.insert("end",self.name+"\n")
                 self.textbox.insert("end",self.price,"\n")
                 self.textbox.insert("end",self.currency)
-                '''
-                for r in respDict:
-                
-                    self.textbox.insert('end',respDict[r])
-                    self.textbox.insert('end',"\n")
-                '''    
+            
                 self.valueCB.grid(row=11,column=1,columnspan=3)
                 self.valueCB.configure(text=self.name+" Graphics")
              
@@ -334,15 +360,13 @@ class App(ctk.CTk,tk.Menu):
 
 
     def createMetals(self):
-         self.preciousMenu = ctk.CTkOptionMenu(self,
-                                        values=["Gold"],command=self.gold_callback)
+       
          self.preciousMenu.grid(row=4, column=1,padx=10, pady=10,columnspan=1, sticky="ew")
          self.codeEntry.grid_forget()
 
     
     def createCommodity(self):
-         self.comMenu = ctk.CTkOptionMenu(self,
-                                        values=["Oat","Platinum",'Gold','Palladium'],command=self.commodity_callback)
+        
          self.comMenu.grid(row=4, column=1,padx=10, pady=10,columnspan=1, sticky="ew")
    
     def fetchCryptoData(self):

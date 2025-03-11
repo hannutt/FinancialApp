@@ -13,9 +13,11 @@ import requests
 from pathlib import Path
 import pandas as pd
 from textwrap import wrap
+from pathlib import Path
+from openai import OpenAI
 apk=os.environ.get('apk')
 mailtrap=os.environ.get('mailtrap')
-
+oakey=os.environ.get('oakey')
 class Options(ctk.CTk):
     def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -115,15 +117,13 @@ class Options(ctk.CTk):
         #poistetaan checkboksin valinta 5 sekunnin jälkeen 
         time.sleep(5)
         cbparam.deselect()
-    
-   
+      
     def changeSendBtnText(self):
         newtext=self.emailEntry.get()
         print(newtext)
         #self.sendBtn.configure(text="Send to "+newtext)
       
-        #self.sendBtn.configure(text="send to "+newtext)
-       
+        #self.sendBtn.configure(text="send to "+newtext)     
 
     def sendEmailPdf(self):
         #tiedostodialogi, valittu tiedosto polkuineen talletetaan pdfFile muuttujaan.
@@ -181,7 +181,6 @@ class Options(ctk.CTk):
         self.sendBtn.grid(row=3, sticky="ew")
         #self.emailEntry.bind('<FocusOut>',self.changeSendBtnText)
       
-
     #haeetaan apista kaikki krypto tunnukset ja talletetaan ne csv-tiedostoon muodossa yksi symboli/rivi + symbols ja timestamp
     #otsikoilla.
     def getCryptos(self):
@@ -190,9 +189,19 @@ class Options(ctk.CTk):
         if response.status_code == requests.codes.ok:
             df=pd.read_json(response.text)
             df.to_csv('crypto.csv')
-            
         else:
             print("Error:", response.status_code, response.text)
+    
+    def convertTts(self,text):
+        
+        client = OpenAI(api_key=oakey)
+        speech_file_path = Path(__file__).parent / "tts.mp3"
+        response = client.audio.speech.create(
+        model="tts-1",
+        voice="alloy",
+        input=text,
+        )
+        response.stream_to_file(speech_file_path)
    
    
 

@@ -1,10 +1,12 @@
 
+from datetime import datetime
 import json
 import requests
 import os
 import matplotlib.pyplot as plt
 
 msApk=os.environ.get('msapk')
+apk=os.environ.get('apk')
 
 class MarketStack():
      def __init__(self,*args, **kwargs):
@@ -44,7 +46,32 @@ class MarketStack():
          plt.title(nameStr)
          plt.barh(labels,self.values)
          plt.show()
+     
+     def getInflation(self,country,tbox):
+          api_url="https://api.api-ninjas.com/v1/inflation?country={}".format(country)
+          response = requests.get(api_url, headers={'X-Api-Key': apk})
+          if response.status_code == requests.codes.ok:
+              tbox.insert("end",response.text)
+              
+          else:
+            print("Error:", response.status_code, response.text)
 
+     def getDividends(self,ticker,tbox):
+        dNow=datetime.today().strftime('%Y-%m-%d')
+        api_url=f"https://api.marketstack.com/v2/dividends?access_key={msApk}&symbols={ticker}&date_from=2025-01-01"
+        response=requests.get(api_url)
+        data=json.loads(response.text)
+        for d in data['data']:
+            Divdate=d['date']
+            symbol=d['symbol']
+            dividend=d['dividend']
+          
+        tbox.insert("end",symbol)
+        tbox.insert("end","\n")
+        tbox.insert("end",dividend)
+        tbox.insert("end","\n")
+        tbox.insert("end",Divdate)
+     
      
        
 

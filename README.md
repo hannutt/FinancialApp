@@ -81,6 +81,10 @@ selected service using the Feedparser library, parses the result into XML tags a
 in text form in the application's text field component. By clicking the checkbox of the custom URL address, 
 the program creates an input field where the user can enter his own address, from which the RSS feed is retrieved.
 
+TEXT TO SPEECH
+
+All data in the text box component can be converted to speech. The application uses OpenAI's text-to-speech module to convert text. After conversion, the TTS method creates an mp3 file in the root folder of the application. The file contains the data that was in the textbox component, converted to speech.
+
 CREATING GRAPHICS FROM SEARCHED VALUES
 
 The application uses the Matplotlib library to create graphs of, for example, stock prices searched by the user.
