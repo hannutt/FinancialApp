@@ -15,9 +15,11 @@ import pandas as pd
 from textwrap import wrap
 from pathlib import Path
 from openai import OpenAI
+
 apk=os.environ.get('apk')
 mailtrap=os.environ.get('mailtrap')
 oakey=os.environ.get('oakey')
+
 class Options(ctk.CTk):
     def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -118,13 +120,7 @@ class Options(ctk.CTk):
         time.sleep(5)
         cbparam.deselect()
       
-    def changeSendBtnText(self):
-        newtext=self.emailEntry.get()
-        print(newtext)
-        #self.sendBtn.configure(text="Send to "+newtext)
-      
-        #self.sendBtn.configure(text="send to "+newtext)     
-
+   
     def sendEmailPdf(self):
         #tiedostodialogi, valittu tiedosto polkuineen talletetaan pdfFile muuttujaan.
         pdfFile=ctk.filedialog.askopenfilename()
@@ -179,7 +175,7 @@ class Options(ctk.CTk):
         self.sendBtn=ctk.CTkButton(self.topWIn,text="Send",command=self.sendEmailPdf)
         self.sendBtn.configure(state='disabled')
         self.sendBtn.grid(row=3, sticky="ew")
-        #self.emailEntry.bind('<FocusOut>',self.changeSendBtnText)
+     
       
     #haeetaan apista kaikki krypto tunnukset ja talletetaan ne csv-tiedostoon muodossa yksi symboli/rivi + symbols ja timestamp
     #otsikoilla.

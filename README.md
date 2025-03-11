@@ -85,6 +85,10 @@ TEXT TO SPEECH
 
 All data in the text box component can be converted to speech. The application uses OpenAI's text-to-speech module to convert text. After conversion, the TTS method creates an mp3 file in the root folder of the application. The file contains the data that was in the textbox component, converted to speech.
 
+OPENING YOUTUBE VIDEOS
+
+User can open videos from YouTube by entering a video link. This feature is built with Pytube and webbrowser libraries. When the user enters a video link, a new browser window opens containing the youtube video of the link the user entered.
+
 CREATING GRAPHICS FROM SEARCHED VALUES
 
 The application uses the Matplotlib library to create graphs of, for example, stock prices searched by the user.

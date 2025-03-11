@@ -19,6 +19,8 @@ from PIL import Image
 from databaseConnection import DatabaseConnection
 import speech_recognition as sr
 from datetime import datetime
+from pytube import YouTube
+import webbrowser
 
 
 #Api-avain on talletettu env-muuttujaan, tässä haetaan sen sisältämä merkkijono
@@ -91,6 +93,7 @@ class App(ctk.CTk,tk.Menu):
         self.getBtn=ctk.CTkButton(self,text="Get data",command=self.selectMethods,width=200)
         self.getBtn.grid(row=7,column=1,columnspan=3,sticky="w",pady=10)
         self.textbox=ctk.CTkTextbox(self,width=200,corner_radius=5,height=105,font=self.font)
+        self.textbox.bind("<Key>")
         self.textbox.grid(row=9,column=1,sticky="ew",columnspan=1)
         #lambdan avulla voidaan antaa metodille parametri, ilman lambdaa metodi jossa on () merkit
         #suoritetaan heti
@@ -115,16 +118,13 @@ class App(ctk.CTk,tk.Menu):
         self.fontSizeMenu.grid(row=13,column=1,sticky="E")
 
         #zoomintext metodi saa parametrina fontin tyypin (self.font) ja fontin koon (self.font._size)
-        self.tts=ctk.CTkButton(self,text="TTS",command=lambda:self.opt.convertTts(self.textbox.get('1.0',END)))
+        self.tts=ctk.CTkButton(self,width=20,text="TTS",command=lambda:self.opt.convertTts(self.textbox.get('1.0',END)))
         self.tts.grid(row=8,column=2)
         self.zoomIn=ctk.CTkButton(self,text="+",width=50,command=lambda:self.opt.zoomInText(self.font,self.font._size))
         self.zoomIn.grid(row=9,column=2,padx=10)
         self.zoomOut=ctk.CTkButton(self,text="-",width=50,command=lambda:self.opt.zoomOutText(self.font,self.font._size))
         self.zoomOut.grid(row=9,column=2,sticky="s")
-        ''''
-        self.urlInput=ctk.CTkEntry(self)
-        self.urlInput.grid(row=6,column=8,columnspan=3)
-        '''
+    
         self.invUrl=ctk.StringVar(value='https://fi.investing.com/rss/news_25.rss')
         self.invRss=ctk.CTkCheckBox(self,text="Investing RSS",command=lambda:self.selRssSource(self.invUrl.get()),variable=self.rssSV,onvalue="on",offvalue="off")
         self.invRss.grid(row=2,column=7,sticky="nw")
@@ -133,6 +133,9 @@ class App(ctk.CTk,tk.Menu):
         self.writeUrl=ctk.CTkCheckBox(self,text="Own RSS url?",variable=self.wUrl,onvalue="on",offvalue="off",command=self.showInput)
         #pady(10,0) tarkoittaa, että ylös lisätään 10 pikseliä tyhjää tilaa ja alas 0 pikseliä
         self.writeUrl.grid(row=2,column=7,sticky="ew")
+        self.ytUrl=ctk.StringVar()
+        self.youtubeUrl=ctk.CTkCheckBox(self,text="Youtube video",variable=self.ytUrl,onvalue="on",offvalue="off",command=self.showInput)
+        self.youtubeUrl.grid(row=3,column=7,sticky="ew")
 
         self.valueCB=ctk.CTkCheckBox(self,text="Graphics",command=self.DrawGraphics)
     
@@ -167,11 +170,21 @@ class App(ctk.CTk,tk.Menu):
         if self.wUrl.get()=="on":
 
             self.urlInput=ctk.CTkEntry(self)
-            self.urlInput.grid(row=3,column=7,sticky="EW")
+            self.urlInput.grid(row=4,column=7,sticky="EW")
             #focuosut eventin ja metodin sitominen toisiinsa.
             self.urlInput.bind('<FocusOut>',self.inputFocusOut)
+        elif self.ytUrl.get()=="on":
+            self.urlInput.grid(row=4,column=7,sticky="EW")
+            self.urlInput.bind('<FocusOut>',self.showYoutubeVideo)
         else:
             self.urlInput.grid_forget()
+        
+        
+    def showYoutubeVideo(self,event):
+            url = self.urlInput.get()
+            yt = YouTube(url)
+            webbrowser.open(url)
+          
     #event parametri on tapahtuma eli se kun kursori poistuu entry kentästä.
     def inputFocusOut(self,event):
         
@@ -234,10 +247,6 @@ class App(ctk.CTk,tk.Menu):
             self.newsAboutComp.grid_forget()
             self.createStockBars.grid_forget()
             self.cryptoCsv.grid_forget()
-            '''
-            if exists==1:
-                self.cryptoCsv.grid_forget()
-            '''
             
             #muutetaan buttonin tekstiä configuren avulla
             self.getBtn.configure(text="Get " +self.choice+" data")
@@ -405,6 +414,7 @@ class App(ctk.CTk,tk.Menu):
          self.codeEntry.grid(row=5, column=1,columnspan=1, padx=20,pady=20, sticky="ew")
          self.earnings.grid(row=6,column=1,sticky="W")
          self.newsAboutComp.grid(row=6,column=1,sticky="E")
+    
  
 if __name__ == "__main__":
 
