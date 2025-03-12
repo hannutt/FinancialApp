@@ -21,6 +21,7 @@ import speech_recognition as sr
 from datetime import datetime
 from pytube import YouTube
 import webbrowser
+import vlc
 
 
 #Api-avain on talletettu env-muuttujaan, tässä haetaan sen sisältämä merkkijono
@@ -38,7 +39,7 @@ class App(ctk.CTk,tk.Menu):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.font = ctk.CTkFont(family="Times", size=14)
-        self.words=['Crypto','Stocks','Precious metals','Commodities','History','Finance Dictionary','Inflation']
+        self.words=['Crypto','Stocks','Precious metals','Commodities','History','Finance Dictionary','Inflation','Listen podcasts']
         self.title("Finance App")
         self.menubar=tk.Menu(self)
         self.config(menu=self.menubar)
@@ -76,7 +77,7 @@ class App(ctk.CTk,tk.Menu):
         self.preciousMenu = ctk.CTkOptionMenu(self,
                                         values=["Gold"],command=self.gold_callback)
         self.optMenu = ctk.CTkOptionMenu(self,
-                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','History','Finance Dictionary','Inflation'],command=self.optionmenu_callback,width=200)
+                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','History','Finance Dictionary','Inflation','Listen podcasts'],command=self.optionmenu_callback,width=200)
         self.optMenu.grid(row=3, column=1, pady=10,columnspan=1, sticky="w")
 
         self.comMenu = ctk.CTkOptionMenu(self,
@@ -235,6 +236,9 @@ class App(ctk.CTk,tk.Menu):
                 self.getInflationBtn=ctk.CTkButton(self,text="Get inflation",command=lambda:self.ms.getInflation(self.codeEntry.get(),self.textbox))
                 self.getInflationBtn.grid(row=7,column=1,columnspan=3,sticky="w",pady=10)
                 self.codeEntry.grid(row=5, column=1, sticky="ew")
+            elif choice=="Listen podcasts":
+                self.podcasts=ctk.CTkOptionMenu(self,values=['Select','Talking Real Money'],command=self.podcast)
+                self.podcasts.grid(row=5,column=1,sticky="W")
                 
                 
         else:
@@ -414,6 +418,11 @@ class App(ctk.CTk,tk.Menu):
          self.codeEntry.grid(row=5, column=1,columnspan=1, padx=20,pady=20, sticky="ew")
          self.earnings.grid(row=6,column=1,sticky="W")
          self.newsAboutComp.grid(row=6,column=1,sticky="E")
+
+    def podcast(self,item):
+        if item=="Talking Real Money":
+            p=vlc.MediaPlayer("https://traffic.megaphone.fm/APC9117150470.mp3?updated=1741723584")
+            p.play()
     
  
 if __name__ == "__main__":

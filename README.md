@@ -89,6 +89,10 @@ OPENING YOUTUBE VIDEOS
 
 User can open videos from YouTube by entering a video link. This feature is built with Pytube and webbrowser libraries. When the user enters a video link, a new browser window opens containing the youtube video of the link the user entered.
 
+LISTENING TO PODCASTS
+
+The user can select a podcast to listen to from the drop-down menu. After selection, a link to the podcast's mp3 file is passed to the VLC media player object, which plays the podcast.
+
 CREATING GRAPHICS FROM SEARCHED VALUES
 
 The application uses the Matplotlib library to create graphs of, for example, stock prices searched by the user.
