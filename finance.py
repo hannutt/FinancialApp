@@ -237,7 +237,7 @@ class App(ctk.CTk,tk.Menu):
                 self.getInflationBtn.grid(row=7,column=1,columnspan=3,sticky="w",pady=10)
                 self.codeEntry.grid(row=5, column=1, sticky="ew")
             elif choice=="Listen podcasts":
-                self.podcasts=ctk.CTkOptionMenu(self,values=['Select','Talking Real Money'],command=self.podcast)
+                self.podcasts=ctk.CTkOptionMenu(self,values=['Select','Talking Real Money','The Real Investment Show Podcast'],command=self.opt.podcast)
                 self.podcasts.grid(row=5,column=1,sticky="W")
                 
                 
@@ -419,11 +419,7 @@ class App(ctk.CTk,tk.Menu):
          self.earnings.grid(row=6,column=1,sticky="W")
          self.newsAboutComp.grid(row=6,column=1,sticky="E")
 
-    def podcast(self,item):
-        if item=="Talking Real Money":
-            p=vlc.MediaPlayer("https://traffic.megaphone.fm/APC9117150470.mp3?updated=1741723584")
-            p.play()
-    
+  
  
 if __name__ == "__main__":
 

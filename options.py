@@ -15,7 +15,7 @@ import pandas as pd
 from textwrap import wrap
 from pathlib import Path
 from openai import OpenAI
-
+import vlc
 apk=os.environ.get('apk')
 mailtrap=os.environ.get('mailtrap')
 oakey=os.environ.get('oakey')
@@ -198,6 +198,12 @@ class Options(ctk.CTk):
         input=text,
         )
         response.stream_to_file(speech_file_path)
+    
+    def podcast(self,item):
+        pods={"Talking Real Money":"https://traffic.megaphone.fm/APC9117150470.mp3?updated=1741723584","The Real Investment Show Podcast":"https://traffic.libsyn.com/secure/lancerobertsshow/RIS_3-11-25_TUESDAY_Best-of_Show.mp3?dest-id=797352"}
+        p=vlc.MediaPlayer(pods[item])
+        p.play()
+    
    
    
 
