@@ -14,6 +14,7 @@ fdCol=os.environ.get('fdName')
 class DatabaseConnection():
      def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)
+        
     
     #data-parametri sisältää textboxin arvot
      def DBsave(self,data):
@@ -41,6 +42,11 @@ class DatabaseConnection():
           for d in self.doc:
               tbox.insert("end",d)
 
+     def getFontSize(self,fsize):
+         
+         self.fsize=fsize
+         print(self.fsize)
+         
    
      def CsvSave(self,financedata):
          financeDataList=[]
@@ -49,10 +55,10 @@ class DatabaseConnection():
          #dict objekti, data avaimen arvo on financedatalist
          dataDict={'data':financeDataList}
          df=pd.DataFrame(dataDict)
-         filename = ctk.filedialog.asksaveasfile()
-         
-       
+         filename = ctk.filedialog.asksaveasfile(filetypes=[('csv', '*.csv')])
          df.to_csv(filename,index=False,header=False)
+        
+     
          
          
 

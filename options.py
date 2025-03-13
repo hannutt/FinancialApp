@@ -16,6 +16,9 @@ from textwrap import wrap
 from pathlib import Path
 from openai import OpenAI
 import vlc
+from databaseConnection import DatabaseConnection
+from tkinter import *
+from tkcalendar import Calendar
 apk=os.environ.get('apk')
 mailtrap=os.environ.get('mailtrap')
 oakey=os.environ.get('oakey')
@@ -24,6 +27,7 @@ class Options(ctk.CTk):
     def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fontChanged=False
+        self.dbconn=DatabaseConnection()
 
     def mainComponents(self):
         self.topWIn=ctk.CTkToplevel()
@@ -80,10 +84,12 @@ class Options(ctk.CTk):
     def deliveryFont(self,font):
         self.fontChanged=True
         self.fontname=font
+        
     
     def deliveryFontSize(self,fsize):
         fsize=int(fsize)
         self.fsize=fsize
+        self.dbconn.getFontSize(fsize)
        
 
     def createPdf(self,txtparam,cbparam):
@@ -201,8 +207,13 @@ class Options(ctk.CTk):
     
     def podcast(self,item):
         pods={"Talking Real Money":"https://traffic.megaphone.fm/APC9117150470.mp3?updated=1741723584","The Real Investment Show Podcast":"https://traffic.libsyn.com/secure/lancerobertsshow/RIS_3-11-25_TUESDAY_Best-of_Show.mp3?dest-id=797352"}
-        p=vlc.MediaPlayer(pods[item])
-        p.play()
+        self.p=vlc.MediaPlayer(pods[item])
+        self.p.play()
+    
+    def stopPodcast(self):
+        self.p.stop()
+    
+   
     
    
    

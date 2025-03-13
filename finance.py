@@ -1,4 +1,5 @@
-# Import customtkinter module
+
+from tkcalendar import DateEntry
 import customtkinter as ctk
 import requests
 import feedparser
@@ -24,6 +25,7 @@ import webbrowser
 import vlc
 
 
+
 #Api-avain on talletettu env-muuttujaan, tässä haetaan sen sisältämä merkkijono
 apk=os.environ.get('apk')
 #Asettaa sovelluksen ulkoasutilan System määrittää ulkoasun saman kuin järjestelmän. dark on tumma teema
@@ -33,7 +35,6 @@ ctk.set_appearance_mode("Dark")
 # Supported themes: green, dark-blue, blue
 ctk.set_default_color_theme("green")    
  
-# Create App class
 class App(ctk.CTk,tk.Menu):
 
     def __init__(self, *args, **kwargs):
@@ -50,6 +51,8 @@ class App(ctk.CTk,tk.Menu):
         
         self.dTime=datetime.now().strftime("%d.%m.%Y")
         self.epsList=[]
+       
+       
     
       
         #App luokan textbox voidaan lähettää  options luokalle parametria command=lambda:o.currencyWidgets(self.textbox))
@@ -221,6 +224,7 @@ class App(ctk.CTk,tk.Menu):
                 self.historyCB.grid(row=5,column=1,sticky="E")
                 self.fromDate=ctk.CTkEntry(self,placeholder_text="FROM (YYYY-MM-DD)")
                 self.fromDate.grid(row=6,column=1,sticky="W")
+                self.fromDate.bind("<Button>",self.calendarMethod)
                 self.toDate=ctk.CTkEntry(self,placeholder_text="TO (YYYY-MM-DD)")
                 self.toDate.grid(row=6,column=1,sticky="E")
                 self.getBtn.grid_forget()
@@ -238,7 +242,11 @@ class App(ctk.CTk,tk.Menu):
                 self.codeEntry.grid(row=5, column=1, sticky="ew")
             elif choice=="Listen podcasts":
                 self.podcasts=ctk.CTkOptionMenu(self,values=['Select','Talking Real Money','The Real Investment Show Podcast'],command=self.opt.podcast)
+                self.codeEntry.grid_forget()
+                self.getBtn.grid_forget()
                 self.podcasts.grid(row=5,column=1,sticky="W")
+                self.podstop=ctk.CTkButton(self,text='Stop',width=20,command=self.opt.stopPodcast)
+                self.podstop.grid(row=6,column=1,sticky="W",pady=10)
                 
                 
         else:
@@ -250,6 +258,8 @@ class App(ctk.CTk,tk.Menu):
             
             self.newsAboutComp.grid_forget()
             self.createStockBars.grid_forget()
+            self.podcasts.grid_forget()
+            self.podstop.grid_forget()
             self.cryptoCsv.grid_forget()
             
             #muutetaan buttonin tekstiä configuren avulla
@@ -294,7 +304,7 @@ class App(ctk.CTk,tk.Menu):
 
     
     def selRssSource(self,url):
-        print(url)
+    
         self.url=url
         self.fetchRssData()
       
@@ -312,6 +322,7 @@ class App(ctk.CTk,tk.Menu):
 
     def selectMethods(self):
         print(self.earningsSV.get())
+        #jos stocks on valittu pudotusvalikosta earning cb on valittu
         if self.choice=="Stocks" and self.earningsSV.get()=="on":
             self.fetchData()
             self.fetchEarnings()
@@ -418,6 +429,18 @@ class App(ctk.CTk,tk.Menu):
          self.codeEntry.grid(row=5, column=1,columnspan=1, padx=20,pady=20, sticky="ew")
          self.earnings.grid(row=6,column=1,sticky="W")
          self.newsAboutComp.grid(row=6,column=1,sticky="E")
+    
+    def calendarMethod(self,event):
+        self.cal = DateEntry(self, date_pattern="yyyy-mm-dd")
+        self.cal.grid(row=7,column=1,sticky="W",pady=10)
+        self.cal.bind("<FocusOut>",self.setCalDate) 
+    
+    def setCalDate(self,event):
+        self.fromDate.delete(0,END)
+        self.selected_date = self.cal.get()
+        self.fromDate.insert(0,self.selected_date)
+    
+ 
 
   
  

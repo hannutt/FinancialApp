@@ -109,8 +109,12 @@ Another example where the user has retrieved Microsoft stock data (opening price
 
 HISTORICAL STOCK DATA
 
-The user can search for historical data for the stocks of their choice. The application has input fields for the stock's trading ID and the dates between which data is to be searched. The values ​​entered by the user are passed to the MarketStack API, which returns historical data in JSON format as a response.
+The user can search for historical data for the stocks of their choice. The application has input fields for the stock's trading ID and the dates between which data is to be searched. The values ​​entered by the user are passed to the MarketStack API, which returns historical data in JSON format as a response. The from date and to date fields have a method bound to them that creates a calendar object when the user clicks on the fields with the left mouse button.
 
+
+Example image where the calendar method was executed after a user clicked the mouse
+
+![alt text](images/calendar.png)
 Example image of a user searching for historical data on Microsoft stock between January 7th and January 10th.
 
 ![alt text](images/msftHistory.png)
