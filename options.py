@@ -213,6 +213,9 @@ class Options(ctk.CTk):
     def stopPodcast(self):
         self.p.stop()
     
+
+    
+    
    
     
    

@@ -18,6 +18,7 @@ from newsapi import NewsAPI
 from marketStack import MarketStack
 from PIL import Image
 from databaseConnection import DatabaseConnection
+from ApiNinjas import Apininjas
 import speech_recognition as sr
 from datetime import datetime
 from pytube import YouTube
@@ -48,18 +49,16 @@ class App(ctk.CTk,tk.Menu):
         self.news=NewsAPI()
         self.dbconn=DatabaseConnection()
         self.ms=MarketStack()
+        self.an=Apininjas()
         
-        self.dTime=datetime.now().strftime("%d.%m.%Y")
+       
         self.epsList=[]
        
-       
-    
-      
         #App luokan textbox voidaan lähettää  options luokalle parametria command=lambda:o.currencyWidgets(self.textbox))
         self.menubar.add_command(label='Cur. convert',command=lambda:self.opt.currencyWidgets())
         self.menubar.add_command(label='Exchange rate',command=lambda:self.opt.createExcWidgets())
         self.menubar.add_command(label='Give voice comm.',command=lambda:self.speechReg())
-        self.menubar.add_command(label='earnings',command=lambda:self.fetchOnlyEarnings())
+        self.menubar.add_command(label='earnings',command=lambda:self.an.fetchOnlyEarnings(self.codeEntry.get()))
         self.menubar.add_command(label='email',command=lambda:self.opt.emailOption())
         
           
@@ -141,7 +140,7 @@ class App(ctk.CTk,tk.Menu):
         self.youtubeUrl=ctk.CTkCheckBox(self,text="Youtube video",variable=self.ytUrl,onvalue="on",offvalue="off",command=self.showInput)
         self.youtubeUrl.grid(row=3,column=7,sticky="ew")
 
-        self.valueCB=ctk.CTkCheckBox(self,text="Graphics",command=self.DrawGraphics)
+        self.valueCB=ctk.CTkCheckBox(self,text="Graphics",command=self.an.DrawGraphics)
     
     def speechReg(self):
         r = sr.Recognizer()
@@ -156,7 +155,7 @@ class App(ctk.CTk,tk.Menu):
             if r.recognize_google(audio_text)=="crypto":
                 self.codeEntry.grid(row=5, column=1,columnspan=1, padx=20,pady=20, sticky="ew")
             if r.recognize_google(audio_text)=="stock info":
-                 self.fetchData()
+                 self.an.fetchData()
             if r.recognize_google(audio_text)=="save":
                  self.dbconn.DBsave(self.textbox.get('1.0',END))
             
@@ -221,11 +220,13 @@ class App(ctk.CTk,tk.Menu):
             elif self.choice=="History":
                 self.codeEntry.grid(row=5, column=1,sticky="W")
                 self.historyCB=ctk.CTkCheckBox(self,text="Get history",command=lambda:self.ms.historicalData(self.codeEntry.get(),self.textbox,self.fromDate.get(),self.toDate.get()))
+                
                 self.historyCB.grid(row=5,column=1,sticky="E")
                 self.fromDate=ctk.CTkEntry(self,placeholder_text="FROM (YYYY-MM-DD)")
                 self.fromDate.grid(row=6,column=1,sticky="W")
                 self.fromDate.bind("<Button>",self.calendarMethod)
                 self.toDate=ctk.CTkEntry(self,placeholder_text="TO (YYYY-MM-DD)")
+                self.toDate.bind("<Button>",self.setCalDateToEnd)
                 self.toDate.grid(row=6,column=1,sticky="E")
                 self.getBtn.grid_forget()
             elif self.choice=="Finance Dictionary":
@@ -324,37 +325,16 @@ class App(ctk.CTk,tk.Menu):
         print(self.earningsSV.get())
         #jos stocks on valittu pudotusvalikosta earning cb on valittu
         if self.choice=="Stocks" and self.earningsSV.get()=="on":
-            self.fetchData()
+            self.an.fetchData(self.textbox,self.codeEntry.get(),self.valueCB)
             self.fetchEarnings()
         elif self.choice=="Stocks":
            
-            self.fetchData()
+            self.an.fetchData(self.textbox,self.codeEntry.get(),self.valueCB)
         elif self.choice=="Crypto":
-            self.fetchCryptoData()
+            self.an.fetchCryptoData(self.textbox,self.valueCB,self.codeEntry.get())
         
 
-    def fetchData(self):
-            
-            #self.codeEntry.get() = tekstikentän sisältö
-            api_url = 'https://api.api-ninjas.com/v1/stockprice?ticker={}'.format(self.codeEntry.get())
-            response = requests.get(api_url, headers={'X-Api-Key': apk})
-            if response.status_code == requests.codes.ok:
-            #json-vastaus muunnetaan python dictionary objektiksi.
-                respDict=json.loads(response.text)
-                utime=respDict.get("updated")
-                utimeInt=int(utime)
-                datetimeStr=datetime.fromtimestamp(utimeInt).strftime('%d-%m-%Y %H:%M:%S')
-                self.price = respDict.get("price")
-                self.name=respDict.get("name")
-                self.currency=respDict.get("currency")
-                self.textbox.insert("end","UPDATED:")
-                self.textbox.insert("end",datetimeStr+"\n" )
-                self.textbox.insert("end",self.name+"\n")
-                self.textbox.insert("end",self.price,"\n")
-                self.textbox.insert("end",self.currency)
-            
-                self.valueCB.grid(row=11,column=1,columnspan=3)
-                self.valueCB.configure(text=self.name+" Graphics")
+   
              
     def fetchEarnings(self):
 
@@ -363,25 +343,6 @@ class App(ctk.CTk,tk.Menu):
         if response.status_code == requests.codes.ok:
             self.textbox.insert("end",response.text)
     
-    def fetchOnlyEarnings(self):
-        company=self.codeEntry.get()
-        api_url='https://api.api-ninjas.com/v1/earningscalendar?ticker={}'.format(self.codeEntry.get())
-        response = requests.get(api_url, headers={'X-Api-Key': apk})
-        if response.status_code == requests.codes.ok:
-            #JSON VASTAUKSESTA HAETAAN AINOASTAAN ESTIMATED_EPS KENTÄN ARVOT
-            data=json.loads(response.text)
-            for e in data:
-                eps=e["estimated_eps"]
-                self.epsList.append(eps)
-            #numeroiden järjestys min-max
-            self.epsList.sort()
-            x_pos = 0.5
-            y_pos = 3
-            plt.text(x_pos,y_pos,company)
-            plt.plot(self.epsList, marker = 'o', ms = 15, mec = '#4CAF50', mfc = '#4CAF50')
-            plt.show()
-
-
 
     def createMetals(self):
        
@@ -393,37 +354,6 @@ class App(ctk.CTk,tk.Menu):
         
          self.comMenu.grid(row=4, column=1,padx=10, pady=10,columnspan=1, sticky="ew")
    
-    def fetchCryptoData(self):
-        api_url ='https://api.api-ninjas.com/v1/cryptoprice?symbol={}'.format(self.codeEntry.get())
-        response = requests.get(api_url, headers={'X-Api-Key': apk})
-        if response.status_code == requests.codes.ok:
-
-            #json-vastaus muunnetaan python dictionary objektiksi.
-            respDict=json.loads(response.text)
-            #unix timestampin muunto luettavaksi päivämääräksi
-            utime=respDict.get("timestamp")
-            utimeInt=int(utime)
-            datetimesSter=datetime.fromtimestamp(utimeInt).strftime('%d-%m-%Y %H:%M:%S')
-            self.textbox.insert("end",datetimesSter)
-            self.textbox.insert("end","\n")
-            for r in respDict:
-                
-                self.textbox.insert('end',respDict[r])
-                self.textbox.insert('end',"\n")
-            #talletetaan muuttujaan sanakirjan price avaimen arvo
-            self.price = respDict.get("price")
-            self.name=respDict.get("symbol")
-            
-            self.valueCB.grid(row=11,column=1)
-            self.valueCB.configure(text=self.name+" Graphics")
-        else:
-            print("Error:", response.status_code, response.text)
-    
-    def DrawGraphics(self):
-        nameAndTime=f'{self.name} {self.dTime}'
-        print(nameAndTime)
-        plt.bar(nameAndTime,self.price,width=0.4)
-        plt.show()
     
     def voice_stocks(self):
          self.codeEntry.grid(row=5, column=1,columnspan=1, padx=20,pady=20, sticky="ew")
@@ -439,9 +369,20 @@ class App(ctk.CTk,tk.Menu):
         self.fromDate.delete(0,END)
         self.selected_date = self.cal.get()
         self.fromDate.insert(0,self.selected_date)
-    
- 
 
+        
+    def setCalDateToEnd(self,event):
+         self.cal = DateEntry(self, date_pattern="yyyy-mm-dd")
+         self.cal.grid(row=7,column=1,sticky="W",pady=10)
+         self.cal.bind("<FocusOut>",self.setCalDateToEndField) 
+    
+
+    
+    def setCalDateToEndField(self,event):
+        self.toDate.delete(0,END)
+        self.selected_date2 = self.cal.get()
+        self.toDate.insert(0,self.selected_date2)
+    
   
  
 if __name__ == "__main__":

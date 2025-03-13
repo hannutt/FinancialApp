@@ -115,6 +115,7 @@ The user can search for historical data for the stocks of their choice. The appl
 Example image where the calendar method was executed after a user clicked the mouse
 
 ![alt text](images/calendar.png)
+
 Example image of a user searching for historical data on Microsoft stock between January 7th and January 10th.
 
 ![alt text](images/msftHistory.png)
