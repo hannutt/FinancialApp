@@ -1,4 +1,5 @@
-Project keywords: CustomTkinter, REST-API, Cloud-based NoSQL, Data processing, Mailtrap e-mail integration
+Project keywords: CustomTkinter, REST-API, Cloud-based NoSQL, Data processing, Mailtrap e-mail integration,
+Web-Scraping, Beautiful Soup 4
 
 ABOUT THE APPLICATION
 

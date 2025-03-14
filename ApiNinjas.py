@@ -1,11 +1,9 @@
-
 from datetime import datetime
 import json
 import os
 from matplotlib import pyplot as plt
 import requests
  
-
 apk=os.environ.get('apk')
 class Apininjas():
       def __init__(self,*args, **kwargs):
@@ -84,4 +82,11 @@ class Apininjas():
             plt.title(company +' Earnings')
             plt.plot(self.epsList, marker = 'o', ms = 15, mec = '#4CAF50', mfc = '#4CAF50')
             plt.show()
+
+      def fetchEarnings(self,tbox,ticker):
+
+        api_url='https://api.api-ninjas.com/v1/earningscalendar?ticker={}'.format(ticker)
+        response = requests.get(api_url, headers={'X-Api-Key': apk})
+        if response.status_code == requests.codes.ok:
+            tbox.insert("end",response.text)
     

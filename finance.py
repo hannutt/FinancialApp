@@ -41,7 +41,7 @@ class App(ctk.CTk,tk.Menu):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.font = ctk.CTkFont(family="Times", size=14)
-        self.words=['Crypto','Stocks','Precious metals','Commodities','History','Finance Dictionary','Inflation','Listen podcasts']
+        self.words=['Crypto','Stocks','Precious metals','Commodities','History','Finance Dictionary','Inflation','Listen podcasts','NASDAQ 100']
         self.title("Finance App")
         self.menubar=tk.Menu(self)
         self.config(menu=self.menubar)
@@ -50,9 +50,6 @@ class App(ctk.CTk,tk.Menu):
         self.dbconn=DatabaseConnection()
         self.ms=MarketStack()
         self.an=Apininjas()
-        
-       
-        self.epsList=[]
        
         #App luokan textbox voidaan lähettää  options luokalle parametria command=lambda:o.currencyWidgets(self.textbox))
         self.menubar.add_command(label='Cur. convert',command=lambda:self.opt.currencyWidgets())
@@ -79,7 +76,7 @@ class App(ctk.CTk,tk.Menu):
         self.preciousMenu = ctk.CTkOptionMenu(self,
                                         values=["Gold"],command=self.gold_callback)
         self.optMenu = ctk.CTkOptionMenu(self,
-                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','History','Finance Dictionary','Inflation','Listen podcasts'],command=self.optionmenu_callback,width=200)
+                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','History','Finance Dictionary','Inflation','Listen podcasts','NASDAQ 100'],command=self.optionmenu_callback,width=200)
         self.optMenu.grid(row=3, column=1, pady=10,columnspan=1, sticky="w")
 
         self.comMenu = ctk.CTkOptionMenu(self,
@@ -96,7 +93,7 @@ class App(ctk.CTk,tk.Menu):
         self.getBtn=ctk.CTkButton(self,text="Get data",command=self.selectMethods,width=200)
         self.getBtn.grid(row=7,column=1,columnspan=3,sticky="w",pady=10)
         self.textbox=ctk.CTkTextbox(self,width=200,corner_radius=5,height=105,font=self.font)
-        self.textbox.bind("<Key>")
+     
         self.textbox.grid(row=9,column=1,sticky="ew",columnspan=1)
         #lambdan avulla voidaan antaa metodille parametri, ilman lambdaa metodi jossa on () merkit
         #suoritetaan heti
@@ -248,6 +245,8 @@ class App(ctk.CTk,tk.Menu):
                 self.podcasts.grid(row=5,column=1,sticky="W")
                 self.podstop=ctk.CTkButton(self,text='Stop',width=20,command=self.opt.stopPodcast)
                 self.podstop.grid(row=6,column=1,sticky="W",pady=10)
+            elif choice=='NASDAQ 100':
+                self.opt.getNasdaq(self.textbox)
                 
                 
         else:
@@ -305,7 +304,6 @@ class App(ctk.CTk,tk.Menu):
 
     
     def selRssSource(self,url):
-    
         self.url=url
         self.fetchRssData()
       
@@ -326,7 +324,7 @@ class App(ctk.CTk,tk.Menu):
         #jos stocks on valittu pudotusvalikosta earning cb on valittu
         if self.choice=="Stocks" and self.earningsSV.get()=="on":
             self.an.fetchData(self.textbox,self.codeEntry.get(),self.valueCB)
-            self.fetchEarnings()
+            self.an.fetchEarnings(self.textbox,self.codeEntry.get())
         elif self.choice=="Stocks":
            
             self.an.fetchData(self.textbox,self.codeEntry.get(),self.valueCB)
@@ -334,15 +332,6 @@ class App(ctk.CTk,tk.Menu):
             self.an.fetchCryptoData(self.textbox,self.valueCB,self.codeEntry.get())
         
 
-   
-             
-    def fetchEarnings(self):
-
-        api_url='https://api.api-ninjas.com/v1/earningscalendar?ticker={}'.format(self.codeEntry.get())
-        response = requests.get(api_url, headers={'X-Api-Key': apk})
-        if response.status_code == requests.codes.ok:
-            self.textbox.insert("end",response.text)
-    
 
     def createMetals(self):
        
@@ -369,19 +358,20 @@ class App(ctk.CTk,tk.Menu):
         self.fromDate.delete(0,END)
         self.selected_date = self.cal.get()
         self.fromDate.insert(0,self.selected_date)
-
+        self.cal.grid_forget()
         
     def setCalDateToEnd(self,event):
          self.cal = DateEntry(self, date_pattern="yyyy-mm-dd")
          self.cal.grid(row=7,column=1,sticky="W",pady=10)
-         self.cal.bind("<FocusOut>",self.setCalDateToEndField) 
+         self.cal.bind("<FocusOut>",self.setCalDateToEndField)
+        
     
-
     
     def setCalDateToEndField(self,event):
         self.toDate.delete(0,END)
         self.selected_date2 = self.cal.get()
         self.toDate.insert(0,self.selected_date2)
+        self.cal.grid_forget()
     
   
  
