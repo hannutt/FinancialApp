@@ -73,6 +73,12 @@ Example image where a user searches for news from NewsAPI using a Microsoft keyw
 
 ![alt text](images/newsMicrosoft.png)
 
+SEARCH FINANCIAL DATA USING WEB SCRAPING
+
+The app uses Beautiful Soup 4 and requests libraries to retrieve stock index data from external websites.
+Data is retrieved from, for example, HTML table elements using the class name or id value of the table element.
+The retrieved data is looped through with a for loop and finally displayed without HTML tags in the application's text box component.
+
 
 SEARCH RSS FEEDS
 

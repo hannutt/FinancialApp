@@ -1,4 +1,5 @@
 
+from bs4 import BeautifulSoup
 from tkcalendar import DateEntry
 import customtkinter as ctk
 import requests
@@ -24,6 +25,7 @@ from datetime import datetime
 from pytube import YouTube
 import webbrowser
 import vlc
+from Scraper import Scrape
 
 
 
@@ -41,7 +43,7 @@ class App(ctk.CTk,tk.Menu):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.font = ctk.CTkFont(family="Times", size=14)
-        self.words=['Crypto','Stocks','Precious metals','Commodities','History','Finance Dictionary','Inflation','Listen podcasts','NASDAQ 100']
+        self.words=['Crypto','Stocks','Precious metals','Commodities','History','Finance Dictionary','Inflation','Listen podcasts','Index history','Stock index by country']
         self.title("Finance App")
         self.menubar=tk.Menu(self)
         self.config(menu=self.menubar)
@@ -50,6 +52,7 @@ class App(ctk.CTk,tk.Menu):
         self.dbconn=DatabaseConnection()
         self.ms=MarketStack()
         self.an=Apininjas()
+        self.sc=Scrape()
        
         #App luokan textbox voidaan lähettää  options luokalle parametria command=lambda:o.currencyWidgets(self.textbox))
         self.menubar.add_command(label='Cur. convert',command=lambda:self.opt.currencyWidgets())
@@ -76,7 +79,7 @@ class App(ctk.CTk,tk.Menu):
         self.preciousMenu = ctk.CTkOptionMenu(self,
                                         values=["Gold"],command=self.gold_callback)
         self.optMenu = ctk.CTkOptionMenu(self,
-                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','History','Finance Dictionary','Inflation','Listen podcasts','NASDAQ 100'],command=self.optionmenu_callback,width=200)
+                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','History','Finance Dictionary','Inflation','Listen podcasts','Index history','Stock index by county'],command=self.optionmenu_callback,width=200)
         self.optMenu.grid(row=3, column=1, pady=10,columnspan=1, sticky="w")
 
         self.comMenu = ctk.CTkOptionMenu(self,
@@ -203,7 +206,7 @@ class App(ctk.CTk,tk.Menu):
                 self.createStockBars.grid(row=6,column=2,sticky="E")
                 self.dividends.grid(row=6,column=3,sticky="E")
             elif self.choice=="Precious metals":
-                self.createMetals()
+                self.opt.createMetals(self.preciousMenu,self.codeEntry)
             elif self.choice=="Crypto":
                 self.cryptoCsv=ctk.CTkCheckBox(self,text="Save cryptos to CSV",command=lambda:self.opt.getCryptos())
                 self.newsAboutComp.grid(row=6,column=1,sticky="W")
@@ -212,7 +215,7 @@ class App(ctk.CTk,tk.Menu):
             elif self.choice=="Commodities":
                 
                 self.codeEntry.grid_forget()
-                self.createCommodity()
+                self.opt.createCommodity(self.comMenu)
 
             elif self.choice=="History":
                 self.codeEntry.grid(row=5, column=1,sticky="W")
@@ -245,8 +248,14 @@ class App(ctk.CTk,tk.Menu):
                 self.podcasts.grid(row=5,column=1,sticky="W")
                 self.podstop=ctk.CTkButton(self,text='Stop',width=20,command=self.opt.stopPodcast)
                 self.podstop.grid(row=6,column=1,sticky="W",pady=10)
-            elif choice=='NASDAQ 100':
-                self.opt.getNasdaq(self.textbox)
+
+            elif choice=='Index history':
+                 self.userSelection=ctk.StringVar()
+                 #lambda x: voidaan lähettää option menun valinnan lisäksi muita parametreja.
+                 self.indexMenu=ctk.CTkOptionMenu(self,values=['Select','NASDAQ 100','DAX'],command=lambda x:self.sc.stockIndex(x,self.textbox))
+                 self.indexMenu.grid(row=5,column=1,sticky="W")
+                 self.codeEntry.grid_forget()
+                 self.getBtn.grid_forget()
                 
                 
         else:
@@ -265,7 +274,10 @@ class App(ctk.CTk,tk.Menu):
             #muutetaan buttonin tekstiä configuren avulla
             self.getBtn.configure(text="Get " +self.choice+" data")
     #commodity metodi suoritetaan heti, kun pudotusvalikosta on valittu jokin arvo, comm parametri
-    # sisältää valitun arvon.        
+    # sisältää valitun arvon.
+
+        
+            
     def commodity_callback(self,comm):
         api_url="https://api.api-ninjas.com/v1/commodityprice?name={}".format(comm)
         response = requests.get(api_url, headers={'X-Api-Key': apk})
@@ -330,19 +342,7 @@ class App(ctk.CTk,tk.Menu):
             self.an.fetchData(self.textbox,self.codeEntry.get(),self.valueCB)
         elif self.choice=="Crypto":
             self.an.fetchCryptoData(self.textbox,self.valueCB,self.codeEntry.get())
-        
-
-
-    def createMetals(self):
-       
-         self.preciousMenu.grid(row=4, column=1,padx=10, pady=10,columnspan=1, sticky="ew")
-         self.codeEntry.grid_forget()
-
     
-    def createCommodity(self):
-        
-         self.comMenu.grid(row=4, column=1,padx=10, pady=10,columnspan=1, sticky="ew")
-   
     
     def voice_stocks(self):
          self.codeEntry.grid(row=5, column=1,columnspan=1, padx=20,pady=20, sticky="ew")
@@ -364,9 +364,7 @@ class App(ctk.CTk,tk.Menu):
          self.cal = DateEntry(self, date_pattern="yyyy-mm-dd")
          self.cal.grid(row=7,column=1,sticky="W",pady=10)
          self.cal.bind("<FocusOut>",self.setCalDateToEndField)
-        
-    
-    
+            
     def setCalDateToEndField(self,event):
         self.toDate.delete(0,END)
         self.selected_date2 = self.cal.get()

@@ -214,25 +214,24 @@ class Options(ctk.CTk):
     def stopPodcast(self):
         self.p.stop()
     
-    def getNasdaq(self,tbox):
-        response = requests.get("https://demo.scrapingbee.com/table_content.html")
-        #response.text = haetaan vain teksti. response.content hakee myös html tagit
-        soup = BeautifulSoup(response.text, 'html.parser')
-        #etsitään class=table elementti
-        table = soup.find('table')
-        table_body = table.find('tbody')
-        i=0
-        rows = table.find_all('tr')
-        for row in rows:
-            res=row.text
-            resFinal=str(res)
-            resFinal=res.replace("SYMBOL","").replace("NAME","").replace("PRICE","").replace("CHANGE","").replace("%CHANGE","")
-            resFinal.strip()
-            tbox.insert("end",resFinal)
-            #NÄYTETÄÄN 10 ensimmäistä tulosta, jonka jälkeen return keskeyttää metodin
-            i=i+1
-            if i==10:
-                return
+
+    def createCommodity(self,commenu):
+        
+         commenu.grid(row=4, column=1,padx=10, pady=10,columnspan=1, sticky="ew")
+    
+
+    def createMetals(self,preciousmenu,codefield):
+       
+         preciousmenu.grid(row=4, column=1,padx=10, pady=10,columnspan=1, sticky="ew")
+         codefield.grid_forget()
+    
+    
+    
+            
+
+    
+   
+    
 
     
 

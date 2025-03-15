@@ -62,7 +62,6 @@ class Apininjas():
 
       def DrawGraphics(self):
         nameAndTime=f'{self.name} {self.dTime}'
-        print(nameAndTime)
         plt.bar(nameAndTime,self.price,width=0.4)
         plt.show()
     

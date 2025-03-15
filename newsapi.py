@@ -1,3 +1,4 @@
+import json
 import os
 import requests
 
@@ -13,9 +14,11 @@ class NewsAPI():
        
     
     def companyNews(self,keyword,tbox):
-        api_url=f'https://newsapi.org/v2/everything?q={keyword}&sortBy=relevancy&us&apiKey={newsapk}&pageSize=10'
+        api_url=f'https://newsapi.org/v2/everything?q={keyword}&sortBy=relevancy&us&apiKey={newsapk}&pageSize=5'
         response = requests.get(api_url, headers={'X-Api-Key': newsapk})
-        tbox.insert("end",response.json())
-        print(response.json())
+        data=response.json()
+       
+        tbox.insert("end",data)
+       
         
        

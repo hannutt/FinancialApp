@@ -52,11 +52,13 @@ class DatabaseConnection():
          financeDataList=[]
          #parametrina saatu textboksin sisältö talletetaan listaan, 
          financeDataList.append(financedata)
+         print(financeDataList)
+         
          #dict objekti, data avaimen arvo on financedatalist
          dataDict={'data':financeDataList}
          df=pd.DataFrame(dataDict)
          filename = ctk.filedialog.asksaveasfile(filetypes=[('csv', '*.csv')])
-         df.to_csv(filename,index=False,header=False)
+         df.to_csv(filename,index=False,header=False,sep="\t")
         
      
          
