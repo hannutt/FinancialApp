@@ -79,7 +79,7 @@ class App(ctk.CTk,tk.Menu):
         self.preciousMenu = ctk.CTkOptionMenu(self,
                                         values=["Gold"],command=self.gold_callback)
         self.optMenu = ctk.CTkOptionMenu(self,
-                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','History','Finance Dictionary','Inflation','Listen podcasts','Index history','Stock index by county'],command=self.optionmenu_callback,width=200)
+                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','History','Finance Dictionary','Inflation','Listen podcasts','Index history','Stock index by country'],command=self.optionmenu_callback,width=200)
         self.optMenu.grid(row=3, column=1, pady=10,columnspan=1, sticky="w")
 
         self.comMenu = ctk.CTkOptionMenu(self,
@@ -250,12 +250,18 @@ class App(ctk.CTk,tk.Menu):
                 self.podstop.grid(row=6,column=1,sticky="W",pady=10)
 
             elif choice=='Index history':
-                 self.userSelection=ctk.StringVar()
                  #lambda x: voidaan lähettää option menun valinnan lisäksi muita parametreja.
                  self.indexMenu=ctk.CTkOptionMenu(self,values=['Select','NASDAQ 100','DAX'],command=lambda x:self.sc.stockIndex(x,self.textbox))
                  self.indexMenu.grid(row=5,column=1,sticky="W")
                  self.codeEntry.grid_forget()
                  self.getBtn.grid_forget()
+            elif choice=='Stock index by country':
+
+                self.indexMenuByCountry=ctk.CTkOptionMenu(self,values=['Select','Finland','Germany'],command=lambda x:self.sc.scrapeIndex(x,self.textbox))
+                self.indexMenuByCountry.grid(row=5,column=1,sticky="W")
+                self.codeEntry.grid_forget()
+                self.getBtn.grid_forget()
+
                 
                 
         else:

@@ -19,3 +19,22 @@ class Scrape():
             tbox.insert("end",res)
             #lisätään rivinvaihto, että csv-tiedostoon voidaan tallentaa data muodossa rivi + rivinvaihto
             tbox.insert("end","\n")
+
+      def scrapeIndex(self,indexname,tbox):
+ 
+          indexs={"Finland":{'url':'https://www.investing.com/indices/world-indices',"id":"16"},
+                  "Germany":{'url':'https://www.investing.com/indices/world-indices',"id":"4"}}
+          #print(indexs[indexname]['url'])
+          
+          response = requests.get(indexs[indexname]['url'])
+          soup = BeautifulSoup(response.text, 'html.parser')
+          table = soup.find(id='indice_table_'+indexs[indexname]['id'])
+          rows=table.find_all('tr')
+          for r in rows:
+
+            res=r.text
+            tbox.insert("end",res)
+            tbox.insert("end","\n")
+        
+          
+     

@@ -79,6 +79,10 @@ The app uses Beautiful Soup 4 and requests libraries to retrieve stock index dat
 Data is retrieved from, for example, HTML table elements using the class name or id value of the table element.
 The retrieved data is looped through with a for loop and finally displayed without HTML tags in the application's text box component.
 
+Example image where a user has scraped OMXH index data from an external website.
+
+![alt text](images/stockscrape.png)
+
 
 SEARCH RSS FEEDS
 
