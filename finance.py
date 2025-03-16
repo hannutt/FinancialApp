@@ -26,6 +26,7 @@ from pytube import YouTube
 import webbrowser
 import vlc
 from Scraper import Scrape
+from CTkMessagebox import CTkMessagebox
 
 
 
@@ -142,14 +143,21 @@ class App(ctk.CTk,tk.Menu):
         self.youtubeUrl.grid(row=3,column=7,sticky="ew")
 
         self.valueCB=ctk.CTkCheckBox(self,text="Graphics",command=self.an.DrawGraphics)
+
     def showDialog(self):
-            self.dialog = ctk.CTkInputDialog(text="Enter the number of ETFs to display:", title="Question")
-            #jos käyttäjä ei anna lukumäärää annetaan metodilla parametrina luku 5
-            if self.dialog.get_input()=='':
-                amount=5
-                self.sc.listEtfs(self.textbox,amount)
-            else:
-                self.sc.listEtfs(self.textbox,self.dialog.get_input())
+            
+            self.dialog = ctk.CTkInputDialog(text="Enter the number of ETFs to display or an individual ETF ID to view its details:", title="Question")
+          
+            response=self.dialog.get_input()
+            #isdigit tarkistaa, sisältääkö merkkijono numeroita
+            if response.isdigit():
+                self.sc.listEtfs(self.textbox,response)
+            
+            if response.isdigit()==False:
+                self.sc.getEtfData(self.textbox,response)
+            
+            
+         
     
     def speechReg(self):
         r = sr.Recognizer()

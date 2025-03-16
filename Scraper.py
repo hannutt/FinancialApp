@@ -37,6 +37,12 @@ class Scrape():
             res=r.text
             tbox.insert("end",res)
             tbox.insert("end","\n")
+      
+      def getEtfData(self,tbox,etfId):
+         response=requests.get(f"https://stockanalysis.com/etf/{etfId}/")
+         soup = BeautifulSoup(response.text, 'html.parser')
+         data=soup.find(class_='order-1 flex flex-row gap-2 tiny:gap-3 xs:gap-4')
+         tbox.insert("end",data.get_text())
 
       def listEtfs(self,tbox,qty):
          i=0

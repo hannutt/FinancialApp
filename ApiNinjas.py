@@ -58,7 +58,9 @@ class Apininjas():
                 tbox.insert("end",str(self.name)+"\n")
                 tbox.insert("end",str(self.price)+"\n")
                 tbox.insert("end",str(self.currency)+"\n")
-                tbox.insert("end",self.data.get_text())
+                tbox.insert("end",str(self.data.get_text())+"\n")
+                tbox.insert("end","Target price: ")
+                tbox.insert("end",str(self.target.get_text()))
             
                 valuecb.grid(row=11,column=1,columnspan=3)
                 valuecb.configure(text=self.name+" Graphics")
@@ -69,6 +71,7 @@ class Apininjas():
           response = requests.get(f'https://stockanalysis.com/stocks/{ticker}/forecast/')
           soup = BeautifulSoup(response.text, 'html.parser')
           self.data = soup.find(class_='-mt-2 text-center text-xl font-semibold')
+          self.target=soup.find(class_='whitespace-nowrap px-0.5 py-[1px] text-left text-smaller font-semibold tiny:text-base xs:px-1 sm:py-2 sm:text-right sm:text-small')
         
 
       def DrawGraphics(self):

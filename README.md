@@ -85,6 +85,14 @@ Example image where a user has scraped OMXH index data from an external website.
 
 ![alt text](images/stockscrape.png)
 
+SEARCH ETF DATA
+
+For now, ETF data retrieval is done using the Beautiful Soup web scraping library. The user can search for information about an individual ETF by entering its symbol or a list of available ETFs from around the world. When searching for a list of available ETFs, the app will ask the user to enter the number of ETFs to search for. This is because the list of all ETFs contains several hundred funds and searching for them can be time-consuming and resource-intensive. Entering the number avoids accidentally searching the entire list.
+
+Example image of an input window where a user searches for an individual ETF based on the fund's trading symbol
+
+![alt text](images/etfDialog.png)
+
 
 SEARCH RSS FEEDS
 
