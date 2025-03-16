@@ -52,7 +52,6 @@ class DatabaseConnection():
          financeDataList=[]
          #parametrina saatu textboksin sisältö talletetaan listaan, 
          financeDataList.append(financedata)
-         print(financeDataList)
          
          #dict objekti, data avaimen arvo on financedatalist
          dataDict={'data':financeDataList}

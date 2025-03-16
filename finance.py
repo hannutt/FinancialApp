@@ -55,13 +55,14 @@ class App(ctk.CTk,tk.Menu):
         self.sc=Scrape()
        
         #App luokan textbox voidaan lähettää  options luokalle parametria command=lambda:o.currencyWidgets(self.textbox))
-        self.menubar.add_command(label='Cur. convert',command=lambda:self.opt.currencyWidgets())
-        self.menubar.add_command(label='Exchange rate',command=lambda:self.opt.createExcWidgets())
+        #self.menubar.add_command(label='Cur. convert',command=lambda:self.opt.currencyWidgets())
+        #self.menubar.add_command(label='Exchange rate',command=lambda:self.opt.createExcWidgets())
         self.menubar.add_command(label='Give voice comm.',command=lambda:self.speechReg())
         self.menubar.add_command(label='earnings',command=lambda:self.an.fetchOnlyEarnings(self.codeEntry.get()))
-        self.menubar.add_command(label='email',command=lambda:self.opt.emailOption())
+        self.menubar.add_command(label='Send email',command=lambda:self.opt.emailOption())
+        self.menubar.add_command(label='Newest ETFs',command=lambda:self.showDialog())
         
-          
+        
         #self.add_cascade()
         self.graph=False
         self.inputField=ctk.StringVar()
@@ -141,6 +142,14 @@ class App(ctk.CTk,tk.Menu):
         self.youtubeUrl.grid(row=3,column=7,sticky="ew")
 
         self.valueCB=ctk.CTkCheckBox(self,text="Graphics",command=self.an.DrawGraphics)
+    def showDialog(self):
+            self.dialog = ctk.CTkInputDialog(text="Enter the number of ETFs to display:", title="Question")
+            #jos käyttäjä ei anna lukumäärää annetaan metodilla parametrina luku 5
+            if self.dialog.get_input()=='':
+                amount=5
+                self.sc.listEtfs(self.textbox,amount)
+            else:
+                self.sc.listEtfs(self.textbox,self.dialog.get_input())
     
     def speechReg(self):
         r = sr.Recognizer()
@@ -257,7 +266,7 @@ class App(ctk.CTk,tk.Menu):
                  self.getBtn.grid_forget()
             elif choice=='Stock index by country':
 
-                self.indexMenuByCountry=ctk.CTkOptionMenu(self,values=['Select','Finland','Germany'],command=lambda x:self.sc.scrapeIndex(x,self.textbox))
+                self.indexMenuByCountry=ctk.CTkOptionMenu(self,values=['Select','Finland','Germany','Japan','Poland'],command=lambda x:self.sc.scrapeIndex(x,self.textbox))
                 self.indexMenuByCountry.grid(row=5,column=1,sticky="W")
                 self.codeEntry.grid_forget()
                 self.getBtn.grid_forget()
@@ -336,6 +345,7 @@ class App(ctk.CTk,tk.Menu):
             #näytetään kaikki title tagien sisältämä data
 
             self.textbox.insert("end",f.title)
+            
 
     def selectMethods(self):
         print(self.earningsSV.get())

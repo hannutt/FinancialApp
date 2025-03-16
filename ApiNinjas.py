@@ -1,6 +1,7 @@
 from datetime import datetime
 import json
 import os
+from bs4 import BeautifulSoup
 from matplotlib import pyplot as plt
 import requests
  
@@ -43,6 +44,7 @@ class Apininjas():
             api_url = 'https://api.api-ninjas.com/v1/stockprice?ticker={}'.format(ticker)
             response = requests.get(api_url, headers={'X-Api-Key': apk})
             if response.status_code == requests.codes.ok:
+                self.analystConsensus(ticker)
                 #json-vastaus muunnetaan python dictionary objektiksi.
                 respDict=json.loads(response.text)
                 utime=respDict.get("updated")
@@ -53,12 +55,21 @@ class Apininjas():
                 self.currency=respDict.get("currency")
                 tbox.insert("end","UPDATED:")
                 tbox.insert("end",datetimeStr+"\n" )
-                tbox.insert("end",self.name+"\n")
-                tbox.insert("end",self.price,"\n")
-                tbox.insert("end",self.currency)
+                tbox.insert("end",str(self.name)+"\n")
+                tbox.insert("end",str(self.price)+"\n")
+                tbox.insert("end",str(self.currency)+"\n")
+                tbox.insert("end",self.data.get_text())
             
                 valuecb.grid(row=11,column=1,columnspan=3)
                 valuecb.configure(text=self.name+" Graphics")
+      
+      #metodi hakee web-scrapingin ja käyttäjän syöttämän kaupankäyntitunnuksen perusteella
+      #osakkeen suosituksen
+      def analystConsensus(self,ticker):
+          response = requests.get(f'https://stockanalysis.com/stocks/{ticker}/forecast/')
+          soup = BeautifulSoup(response.text, 'html.parser')
+          self.data = soup.find(class_='-mt-2 text-center text-xl font-semibold')
+        
 
       def DrawGraphics(self):
         nameAndTime=f'{self.name} {self.dTime}'

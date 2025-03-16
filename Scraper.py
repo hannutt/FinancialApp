@@ -23,7 +23,9 @@ class Scrape():
       def scrapeIndex(self,indexname,tbox):
  
           indexs={"Finland":{'url':'https://www.investing.com/indices/world-indices',"id":"16"},
-                  "Germany":{'url':'https://www.investing.com/indices/world-indices',"id":"4"}}
+                  "Germany":{'url':'https://www.investing.com/indices/world-indices',"id":"4"},
+                  "Japan":{'url':'https://www.investing.com/indices/world-indices',"id":"20"},
+                  "Poland":{'url':'https://www.investing.com/indices/world-indices',"id":"25"},}
           #print(indexs[indexname]['url'])
           
           response = requests.get(indexs[indexname]['url'])
@@ -35,6 +37,31 @@ class Scrape():
             res=r.text
             tbox.insert("end",res)
             tbox.insert("end","\n")
+
+      def listEtfs(self,tbox,qty):
+         i=0
+         qtyint=int(qty)
+         #lisätään qtyintiin 1 koska ensimmäinen riviä ei näytetä tuloksessa. näin saadaan käyttäjän antama
+         #lukumäärä etf-dataa
+         qtyint=qtyint+1
+         response=requests.get("https://stockanalysis.com/etf/list/new/")
+         soup = BeautifulSoup(response.text, 'html.parser')
+         table = soup.find(id='main-table')
+         rows=table.find_all('tr')
+         #silmukassa i laskee rivit ja qtyint on käyttäjän antama rajoitus, montako rahastoa näytetään
+         for r in rows:
+            res=r.text
+            i=i+1
+            #ensimmäinen rivi sisältää tarpeetonta tietoa, eli aletaan lisäämään textboxiin dataa vasta ensimmäisen
+            #rivin jälkeen.
+            if i > 1:
+               tbox.insert("end",res)
+               tbox.insert("end","\n")
+            #jos rivejä on yhtä monta kuin syötetty määrä, keskeytetään metodi
+            if i == qtyint:
+              return
+  
+   
         
           
      

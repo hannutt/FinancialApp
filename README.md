@@ -1,5 +1,5 @@
 Project keywords: CustomTkinter, REST-API, Cloud-based NoSQL, Data processing, Mailtrap e-mail integration,
-Web-Scraping, Beautiful Soup 4
+Web-Scraping, Beautiful Soup 4, Pandas 
 
 ABOUT THE APPLICATION
 
@@ -77,7 +77,9 @@ SEARCH FINANCIAL DATA USING WEB SCRAPING
 
 The app uses Beautiful Soup 4 and requests libraries to retrieve stock index data from external websites.
 Data is retrieved from, for example, HTML table elements using the class name or id value of the table element.
-The retrieved data is looped through with a for loop and finally displayed without HTML tags in the application's text box component.
+The retrieved data is looped through with a for loop and finally displayed without HTML tags in the application's text box component. 
+
+The Beautiful Soup 4 web scraping library also retrieves the analysts' consensus forecast for a stock when a user searches for stock information. This functionality retrieves other stock information from API-Ninja's stock price API and the consensus forecast from an external website using Beautiful Soup 4.
 
 Example image where a user has scraped OMXH index data from an external website.
 
