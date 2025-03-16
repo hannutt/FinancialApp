@@ -54,7 +54,8 @@ class App(ctk.CTk,tk.Menu):
         self.ms=MarketStack()
         self.an=Apininjas()
         self.sc=Scrape()
-       
+
+        
         #App luokan textbox voidaan lähettää  options luokalle parametria command=lambda:o.currencyWidgets(self.textbox))
         #self.menubar.add_command(label='Cur. convert',command=lambda:self.opt.currencyWidgets())
         #self.menubar.add_command(label='Exchange rate',command=lambda:self.opt.createExcWidgets())
@@ -100,6 +101,10 @@ class App(ctk.CTk,tk.Menu):
         self.textbox=ctk.CTkTextbox(self,width=200,corner_radius=5,height=105,font=self.font)
      
         self.textbox.grid(row=9,column=1,sticky="ew",columnspan=1)
+
+        #pikanäppäin bindaus, ctrl+m suoritaa majorIndexes metodin
+        self.bind("<Control-m>",lambda x:self.sc.majorIndexes(x,self.textbox))
+        self.bind("<Control-s>",self.opt.openTts)
         #lambdan avulla voidaan antaa metodille parametri, ilman lambdaa metodi jossa on () merkit
         #suoritetaan heti
         self.rssSV=ctk.StringVar()

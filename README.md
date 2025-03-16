@@ -1,11 +1,11 @@
 Project keywords: CustomTkinter, REST-API, Cloud-based NoSQL, Data processing, Mailtrap e-mail integration,
-Web-Scraping, Beautiful Soup 4, Pandas 
+Web-Scraping, Beautiful Soup 4, Pandas, OpenAI
 
 ABOUT THE APPLICATION
 
 The idea behind the application is to provide the user with various financial information such as information on stocks, 
 commodities and precious metals that the user is looking for. Depending on the user's choices, the application uses 
-REST API interfaces (e.g. API-Ninjat, Newsapi) or RSS sources to search for information.
+REST API interfaces (e.g. API-Ninjat, Newsapi), Web-Scraping (Beautiful Soup 4 & request -libraries) and RSS sources to search for information.
 
 Communication between the REST API and the application takes place using Python's Requests library.
 API results are received in json format, which are parsed into a readable format and displayed in the
@@ -87,7 +87,9 @@ Example image where a user has scraped OMXH index data from an external website.
 
 SEARCH ETF DATA
 
-For now, ETF data retrieval is done using the Beautiful Soup web scraping library. The user can search for information about an individual ETF by entering its symbol or a list of available ETFs from around the world. When searching for a list of available ETFs, the app will ask the user to enter the number of ETFs to search for. This is because the list of all ETFs contains several hundred funds and searching for them can be time-consuming and resource-intensive. Entering the number avoids accidentally searching the entire list.
+For now, ETF data retrieval is done using the Beautiful Soup web scraping library. The user can search for information about an individual ETF by entering its symbol or a list of available ETFs from around the world. When searching for a list of available ETFs, the app will ask the user to enter the number of ETFs to search for. This is because the list of all ETFs contains several hundred funds and searching for them can be time-consuming and resource-intensive. Entering the number avoids accidentally searching the entire list. 
+
+Python's Isdigit function recognizes user input. ETF trading codes contain only letters and when entering the number of funds to search, only a number is entered. Isdigit returns a True/False boolean and both values ​​have their own functions to execute.
 
 Example image of an input window where a user searches for an individual ETF based on the fund's trading symbol
 
@@ -149,3 +151,7 @@ The feature is used by selecting the desired word from the drop-down menu for wh
 Example image where the user has searched the database for an explanation of the term P/E
 
 ![alt text](images/financeDict.png)
+
+KEYBOARD HOTKEYS
+
+The app has a few keyboard shortcuts for different functions. For example, Control+s opens Python's VLC media player module and plays the mp.3 file recorded by the app as text-to-speech, if the user has previously used the app's text-to-speech feature. The binding between the application and the keyboard combinations is done with the Tkinter bind function

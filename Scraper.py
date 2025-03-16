@@ -66,6 +66,19 @@ class Scrape():
             #jos rivejä on yhtä monta kuin syötetty määrä, keskeytetään metodi
             if i == qtyint:
               return
+      def majorIndexes(self,event,tbox):
+            print("control m pressed")
+            
+            response = requests.get('https://investing.com')
+            soup = BeautifulSoup(response.text, 'html.parser')
+            table = soup.find(class_='datatable-v2_body__8TXQk')
+            rows=table.find_all('tr')
+            for r in rows:
+               res=r.text
+               tbox.insert("end",res)
+       
+          
+         
   
    
         

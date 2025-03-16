@@ -206,6 +206,13 @@ class Options(ctk.CTk):
         )
         response.stream_to_file(speech_file_path)
     
+    def openTts(self,event):
+
+        mp=vlc.MediaPlayer()
+        media=vlc.Media("tts.mp3")
+        mp.set_media(media)
+        mp.play()
+    
     def podcast(self,item):
         pods={"Talking Real Money":"https://traffic.megaphone.fm/APC9117150470.mp3?updated=1741723584","The Real Investment Show Podcast":"https://traffic.libsyn.com/secure/lancerobertsshow/RIS_3-11-25_TUESDAY_Best-of_Show.mp3?dest-id=797352"}
         self.p=vlc.MediaPlayer(pods[item])
