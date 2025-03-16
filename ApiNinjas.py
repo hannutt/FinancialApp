@@ -4,7 +4,7 @@ import os
 from bs4 import BeautifulSoup
 from matplotlib import pyplot as plt
 import requests
- 
+import numpy as np
 apk=os.environ.get('apk')
 class Apininjas():
       def __init__(self,*args, **kwargs):
@@ -59,7 +59,6 @@ class Apininjas():
                 tbox.insert("end",str(self.price)+"\n")
                 tbox.insert("end",str(self.currency)+"\n")
                 tbox.insert("end",str(self.data.get_text())+"\n")
-                tbox.insert("end","Target price: ")
                 tbox.insert("end",str(self.target.get_text()))
             
                 valuecb.grid(row=11,column=1,columnspan=3)
@@ -71,12 +70,27 @@ class Apininjas():
           response = requests.get(f'https://stockanalysis.com/stocks/{ticker}/forecast/')
           soup = BeautifulSoup(response.text, 'html.parser')
           self.data = soup.find(class_='-mt-2 text-center text-xl font-semibold')
-          self.target=soup.find(class_='whitespace-nowrap px-0.5 py-[1px] text-left text-smaller font-semibold tiny:text-base xs:px-1 sm:py-2 sm:text-right sm:text-small')
-        
+          #self.target=soup.find(class_='whitespace-nowrap px-0.5 py-[1px] text-left text-smaller font-semibold tiny:text-base xs:px-1 sm:py-2 sm:text-right sm:text-small')
+          response = requests.get(f'https://stockanalysis.com/stocks/{ticker}/ratings/')
+          soup = BeautifulSoup(response.text, 'html.parser')
+          self.target = soup.find(class_='p-4 bp:p-5 sm:p-6 border-t border-contrast md:border-0')
+          
 
       def DrawGraphics(self):
         nameAndTime=f'{self.name} {self.dTime}'
-        plt.bar(nameAndTime,self.price,width=0.4)
+        
+        labels=[nameAndTime,'Target price']
+        #muunto desimaaliluvuksi
+        curPrice=float(self.price)
+        tgPrice=self.target.get_text()
+        #korvataan price target ja $ merkit tyhjällä
+        tgPrice=tgPrice.replace("Price Target","").replace("$","")
+        #poistetaan välilyönnit
+        tgPrice=tgPrice.strip()
+        tgPriceInt=float(tgPrice)
+        values=np.array([curPrice,tgPriceInt])
+        
+        plt.bar(labels,values)
         plt.show()
     
       def fetchOnlyEarnings(self,company):

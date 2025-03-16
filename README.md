@@ -79,7 +79,7 @@ The app uses Beautiful Soup 4 and requests libraries to retrieve stock index dat
 Data is retrieved from, for example, HTML table elements using the class name or id value of the table element.
 The retrieved data is looped through with a for loop and finally displayed without HTML tags in the application's text box component. 
 
-The Beautiful Soup 4 web scraping library also retrieves the analysts' consensus forecast for a stock when a user searches for stock information. This functionality retrieves other stock information from API-Ninja's stock price API and the consensus forecast from an external website using Beautiful Soup 4.
+The Beautiful Soup 4 web scraping library also retrieves the analyst consensus and target price estimate for a stock when a user searches for stock information. This functionality retrieves other stock information from the API-Ninja Stock Price API, as well as the consensus and target price estimate from an external website using Beautiful Soup 4.
 
 Example image where a user has scraped OMXH index data from an external website.
 
@@ -108,13 +108,9 @@ TEXT TO SPEECH
 
 All data in the text box component can be converted to speech. The application uses OpenAI's text-to-speech module to convert text. After conversion, the TTS method creates an mp3 file in the root folder of the application. The file contains the data that was in the textbox component, converted to speech.
 
-OPENING YOUTUBE VIDEOS
+LISTENING TO FINANCE PODCASTS
 
-User can open videos from YouTube by entering a video link. This feature is built with Pytube and webbrowser libraries. When the user enters a video link, a new browser window opens containing the youtube video of the link the user entered.
-
-LISTENING TO PODCASTS
-
-The user can select a podcast to listen to from the drop-down menu. After selection, a link to the podcast's mp3 file is passed to the VLC media player object, which plays the podcast.
+The user can select a finance podcasts to listen to from the drop-down menu. After selection, a link to the podcast's mp3 file is passed to the VLC media player object, which plays the podcast.
 
 CREATING GRAPHICS FROM SEARCHED VALUES
 
