@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from matplotlib import pyplot as plt
 import requests
 import numpy as np
+import customtkinter as ctk
 apk=os.environ.get('apk')
 class Apininjas():
       def __init__(self,*args, **kwargs):
@@ -119,19 +120,24 @@ class Apininjas():
             tbox.insert("end",response.text)
       
       def earningCalls(self,ticker,tbox,earncb):
-          i=0
-          api_url = f'https://api.api-ninjas.com/v1/earningstranscript?ticker={ticker}&year=2024&quarter=1'
-          response = requests.get(api_url, headers={'X-Api-Key':apk})
-          if response.status_code == requests.codes.ok:
+            
+            self.dialog = ctk.CTkInputDialog(text="This feature returns a lot of information, how many records do you want to see?", title="Question")  
+            response=self.dialog.get_input()
+            responseInt=int(response)
+            i=0
+            api_url = f'https://api.api-ninjas.com/v1/earningstranscript?ticker={ticker}&year=2024&quarter=1'
+            response = requests.get(api_url, headers={'X-Api-Key':apk})
+            if response.status_code == requests.codes.ok:
               data=json.loads(response.text)
               #apin json-vastauksessa on transript_split niminen lista, eli kohdistetaan
               #haku listan sisällä olevaan text kohtaan.
               for d in data['transcript_split']:
                   final=d['text']
-                  tbox.insert("end",final)
                   i=i+1
-                  if i==5:
+                  if i>=responseInt:
                       return
+                  else:
+                       tbox.insert("end",final)
               
               earncb.deselect()
               

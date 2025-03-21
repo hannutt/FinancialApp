@@ -14,6 +14,12 @@ application's textbox component. The Feedparser library is used for retrieving a
 The user interface is implemented with the customTkinter library and it is possible to store the retrieved
 data in the NoSQL cloud database used by the application. The cloud database is located in the Mongo Cloud Atlas service.
 
+Optimizing application usage; Some APIs can return a huge amount of data. When a user uses such an option that returns a lot of data, the application always first asks how many records the user wants to see. In these cases, the application uses the CustomTkinter dialog input component to get a response from the user.
+
+Example image of a constraint that limits the returned data to five records.
+
+![alt text](images/earningRestriction.png)
+
 Example image of the application's start view
 
 ![alt text](images/FinancialMain.png)
