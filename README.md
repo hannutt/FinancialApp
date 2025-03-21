@@ -148,6 +148,12 @@ Example image where the user has searched the database for an explanation of the
 
 ![alt text](images/financeDict.png)
 
+The user can also ask their own investment question via the chat GPT API. The API is limited to answering ONLY questions related to investments. The restriction is made using a system message variable.
+
+Below is an example of what the API responds with if the user asks something unrelated to investing.
+
+![alt text](images/fdRestriction.png)
+
 KEYBOARD HOTKEYS
 
 The app has a few keyboard shortcuts for different functions. For example, Control+s opens Python's VLC media player module and plays the mp.3 file recorded by the app as text-to-speech, if the user has previously used the app's text-to-speech feature. The binding between the application and the keyboard combinations is done with the Tkinter bind function

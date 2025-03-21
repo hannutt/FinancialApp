@@ -95,7 +95,7 @@ class App(ctk.CTk,tk.Menu):
         
         self.createStockBars=ctk.CTkCheckBox(self,text="EOD data",command=lambda:self.ms.showEod(self.codeEntry.get()))
         self.dividends=ctk.CTkCheckBox(self,text="Dividends",command=lambda:self.ms.getDividends(self.codeEntry.get(),self.textbox))
-
+        self.earnTranscript=ctk.CTkCheckBox(self,text="Earning call",command=lambda:self.an.earningCalls(self.codeEntry.get(),self.textbox,self.earnTranscript))
         self.getBtn=ctk.CTkButton(self,text="Get data",command=self.selectMethods,width=200)
         self.getBtn.grid(row=7,column=1,columnspan=3,sticky="w",pady=10)
         self.textbox=ctk.CTkTextbox(self,width=200,corner_radius=5,height=105,font=self.font)
@@ -227,6 +227,7 @@ class App(ctk.CTk,tk.Menu):
                 self.newsAboutComp.grid(row=6,column=1,sticky="E")
                 self.createStockBars.grid(row=6,column=2,sticky="E")
                 self.dividends.grid(row=6,column=3,sticky="E")
+                self.earnTranscript.grid(row=7,column=2,sticky="W")
             elif self.choice=="Precious metals":
                 self.opt.createMetals(self.preciousMenu,self.codeEntry)
             elif self.choice=="Crypto":
@@ -252,9 +253,9 @@ class App(ctk.CTk,tk.Menu):
                 self.toDate.grid(row=6,column=1,sticky="E")
                 self.getBtn.grid_forget()
             elif self.choice=="Finance Dictionary":
-                self.codeEntry.grid_forget()
+                self.codeEntry.grid(row=6,column=1,sticky="W",pady=5)
                 self.getBtn.grid_forget()
-                self.getTermBtn=ctk.CTkButton(self,text='Get data',command=lambda:self.dbconn.getData(self.textbox))
+                self.getTermBtn=ctk.CTkButton(self,text='Get data',command=lambda:self.dbconn.getData(self.textbox,self.codeEntry.get()))
                 self.getTermBtn.grid(row=5,column=1,sticky="E")
                 self.financeDict=ctk.CTkOptionMenu(self,values=['Select','p/e','eps','adr','bear market'],command=self.dbconn.getFinanceTerm)
                 self.financeDict.grid(row=5,column=1,sticky="W")

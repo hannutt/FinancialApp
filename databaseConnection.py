@@ -4,6 +4,10 @@ from pymongo.server_api import ServerApi
 import os
 import pandas as pd
 import customtkinter as ctk
+from openai import OpenAI
+
+gptAPk=os.environ.get('oakey')
+
 
 user = os.environ.get('mongoUser')
 psw=os.environ.get("mongoPsw")
@@ -31,16 +35,19 @@ class DatabaseConnection():
          self.term=term
               
       
-     def getData(self,tbox):
-          
-          self.uri="mongodb+srv://{}:{}@cluster0.gfnzlpq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0".format(user,psw)
-          self.client = MongoClient(self.uri, server_api=ServerApi('1'))
-          self.collection = self.client[dbName][fdCol]
+     def getData(self,tbox,codeinput):
+          if codeinput !='':
+              self.askGpt(codeinput,tbox)
+          else:
+              
+            self.uri="mongodb+srv://{}:{}@cluster0.gfnzlpq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0".format(user,psw)
+            self.client = MongoClient(self.uri, server_api=ServerApi('1'))
+            self.collection = self.client[dbName][fdCol]
           #haku siten, että self.term muuttuja vastaa kokoelman key kenttää, tuloksesta poistetaan _id ja key kentät,
           #vain txt kenttä näytetään
-          self.doc=self.collection.find({"key":self.term},{"_id":0,"key":0})
-          for d in self.doc:
-              tbox.insert("end",d)
+            self.doc=self.collection.find({"key":self.term},{"_id":0,"key":0})
+            for d in self.doc:
+                tbox.insert("end",d)
 
      def getFontSize(self,fsize):
          
@@ -58,6 +65,33 @@ class DatabaseConnection():
          df=pd.DataFrame(dataDict)
          filename = ctk.filedialog.asksaveasfile(filetypes=[('csv', '*.csv')])
          df.to_csv(filename,index=False,header=False,sep="\t")
+    
+     def askGpt(self,codeinput,tbox):
+         from openai import OpenAI
+         client = OpenAI(api_key=gptAPk)
+         #tällä rajoitetaan api vastamaan vain sijoittamiseen liittyviin kysymyksiin.
+         system_message="If the user's question is not related to investing, dismiss it."
+         completion = client.chat.completions.create(
+         model="gpt-4o",
+         messages=[
+             
+            {
+                "role": "user",
+                "content": codeinput,
+                
+            },
+            {
+                "role":"system",
+                "content":system_message,
+            }
+        ]
+    
+)        
+         answer=str(completion.choices[0].message.content)
+         tbox.insert("end",answer)
+
+        
+         
         
      
          
