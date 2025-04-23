@@ -60,9 +60,16 @@ class App(ctk.CTk,tk.Menu):
         
         #luetaan kaikki data tickers.txt tiedostosta ja lisätään data tickerlist listaan.
         self.tickerFile=open("tickers.txt","r")
+       
         self.tickerData=self.tickerFile.read()
+        
         self.tickerList=self.tickerData.split("\n")
+        
         self.tickerFile.close()
+        self.cryptoFile=open("cryptos.txt","r")
+        self.cryptoData=self.cryptoFile.read()
+        self.cryptoList=self.cryptoData.split("\n")
+        self.cryptoFile.close()
 
         
         #App luokan textbox voidaan lähettää  options luokalle parametria command=lambda:o.currencyWidgets(self.textbox))
@@ -107,6 +114,10 @@ class App(ctk.CTk,tk.Menu):
         self.getBtn=ctk.CTkButton(self,text="Get data",command=self.selectMethods,width=200)
         self.getBtn.grid(row=7,column=1,columnspan=3,sticky="w",pady=10)
         self.textbox=ctk.CTkTextbox(self,width=200,corner_radius=5,height=105,font=self.font)
+
+        self.acVar=StringVar()
+        self.useAC=ctk.CTkCheckBox(self,text="Autocompete",variable=self.acVar, onvalue="on",offvalue="off",command=self.showAc)
+        
      
         self.textbox.grid(row=9,column=1,sticky="ew",columnspan=1)
         self.podcasts=ctk.CTkOptionMenu(self,values=['Select','Talking Real Money','The Real Investment Show Podcast'],command=self.opt.podcast)
@@ -162,6 +173,7 @@ class App(ctk.CTk,tk.Menu):
         self.indexMenuByCountry=ctk.CTkOptionMenu(self,values=['Select','Finland','Germany','Japan','Poland'],command=lambda x:self.sc.scrapeIndex(x,self.textbox))
        
         self.yfOptions=ctk.CTkOptionMenu(self,values=['Select','Recommendations','Major Holders','Mutual fund hold.','Dividends'],command=lambda x: self.ytf.getOption(x,self.codeEntry.get(),self.textbox))
+        
 
     def showDialog(self):
             
@@ -230,6 +242,7 @@ class App(ctk.CTk,tk.Menu):
         if self.choice in self.words:
             self.codeEntry.grid(row=5, column=1, sticky="ew")
             if self.choice=="Stocks":
+                self.useAC.grid(row=4,column=1,sticky="w",pady=10)
                 self.earnings.grid(row=6,column=1,sticky="W")
                 self.newsAboutComp.grid(row=6,column=1,sticky="E")
                 self.createStockBars.grid(row=6,column=2,sticky="E")
@@ -237,6 +250,8 @@ class App(ctk.CTk,tk.Menu):
                 self.earnTranscript.grid(row=7,column=2,sticky="W")
            
             elif self.choice=="Crypto":
+                self.useAC.grid(row=4,column=1,sticky="w",pady=10)
+                
                 #self.cryptoCsv=ctk.CTkCheckBox(self,text="Save cryptos to CSV",command=lambda:self.opt.getCryptos())
                 self.newsAboutComp.grid(row=6,column=1,sticky="W")
                 self.cryptoCsv.grid(row=6,column=1,sticky="E")
@@ -355,6 +370,19 @@ class App(ctk.CTk,tk.Menu):
             #näytetään kaikki title tagien sisältämä data
 
             self.textbox.insert("end",f.title)
+    
+    def showAc(self):
+        if self.acVar.get()=="on" and self.choice=="Stocks":
+            self.codeEntry.grid_forget()
+            self.codeentryAc=AutocompleteEntry(self,completevalues=self.tickerList)
+            self.codeentryAc.grid(row=5, column=1, sticky="ew")
+        elif self.acVar.get()=="on" and self.choice=="Crypto":
+            self.codeEntry.grid_forget()
+            self.codeentryAc=AutocompleteEntry(self,completevalues=self.cryptoList)
+            self.codeentryAc.grid(row=5, column=1, sticky="ew")
+        elif self.acVar.get()=="off":
+            self.codeentryAc.grid_forget()
+            self.codeEntry.grid(row=5, column=1, sticky="ew")
             
 
     def selectMethods(self):

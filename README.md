@@ -65,11 +65,16 @@ Before sending the email, the program checks that the entered email address is i
 STOCK & CRYPTO CURRENCY INFORMATION SEARCH
 
 Stock/crypto information is searched using the stock's or crypto trading ID. For example, information on the Apple stock
-is retrieved by entering the text AAPL in the input field of the application. The entered text is passed as a parameter to
-the method that communicates with the REST API and retrieves the data using the Requests library. Finally, the result is 
-displayed as parsed in the Customtinter textbox component. When searching for stock information, the user can also select
-the "show earnings" check box. By clicking on that check box, the user sees not only the share information but also
-the share's estimated earnings information.
+is retrieved by entering the text AAPL in the input field of the application. The entered text is passed as a parameter to the method that communicates with the REST API and retrieves the data using the Requests library. Finally, the result is displayed as parsed in the Customtinter textbox component. When searching for stock information, the user can also select the "show earnings" check box. By clicking on that check box, the user sees not only the share information but also the share's estimated earnings information.
+
+AUTOMATIC TEXT FILLING FOR STOCKS AND CRYPTOCURRENCY
+
+Since the stock and cryptocurrency search works with trading codes, the user can also choose automatic text input to make it easier to find the right code. The application uses two text files, one containing the most common stock trading codes and the other containing the most common cryptocurrency codes.
+
+If the user selects the autocomplete feature from the checkbox, the application displays the TTkwidgets Autocomplete Entry field, which uses one of two text files to provide the user with suggestions based on the letters the user types. For example, if the user searches for stock quotes and types the letters MSF in the field, the application will provide options that start with the letters MSF in the text file. See the example image below
+
+![alt text](images/autocompete.png)
+
 
 FIND NEWS BY STOCK / CRYPTO / COMMODITY NAME
 
