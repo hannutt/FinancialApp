@@ -14,6 +14,7 @@ from datetime import datetime
 from tkinter import *
 from tkinter.ttk import *
 import tkinter as tk
+from ttkwidgets.autocomplete import AutocompleteEntry
 from options import Options
 from newsapi import NewsAPI
 from marketStack import MarketStack
@@ -22,8 +23,8 @@ from databaseConnection import DatabaseConnection
 from ApiNinjas import Apininjas
 import speech_recognition as sr
 from datetime import datetime
-from pytube import YouTube
-import webbrowser
+
+
 import vlc
 from Scraper import Scrape
 from CTkMessagebox import CTkMessagebox
@@ -45,7 +46,7 @@ class App(ctk.CTk,tk.Menu):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.font = ctk.CTkFont(family="Times", size=14)
-        self.words=['Crypto','Stocks','Precious metals','Commodities','History','Finance Dictionary','Inflation','Listen podcasts','Index history','Stock index by country','Yahoo Finance']
+        self.words=['Crypto','Stocks','Commodities','History','Finance Dictionary','Inflation','Listen podcasts','Index history','Stock index by country','Yahoo Finance']
         self.title("Finance App")
         self.menubar=tk.Menu(self)
         self.config(menu=self.menubar)
@@ -56,6 +57,12 @@ class App(ctk.CTk,tk.Menu):
         self.an=Apininjas()
         self.sc=Scrape()
         self.ytf=YahooFinance()
+        
+        #luetaan kaikki data tickers.txt tiedostosta ja lisätään data tickerlist listaan.
+        self.tickerFile=open("tickers.txt","r")
+        self.tickerData=self.tickerFile.read()
+        self.tickerList=self.tickerData.split("\n")
+        self.tickerFile.close()
 
         
         #App luokan textbox voidaan lähettää  options luokalle parametria command=lambda:o.currencyWidgets(self.textbox))
@@ -81,10 +88,9 @@ class App(ctk.CTk,tk.Menu):
         self.appimageLbl.grid(row=2,column=1,sticky="e")
         
         #pudotusvalikko
-        self.preciousMenu = ctk.CTkOptionMenu(self,
-                                        values=["Gold"],command=self.gold_callback)
+       
         self.optMenu = ctk.CTkOptionMenu(self,
-                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','History','Finance Dictionary','Inflation','Listen podcasts','Index history','Stock index by country','Yahoo Finance'],command=self.optionmenu_callback,width=200)
+                                        values=['Select',"Crypto","Stocks",'Commodities','History','Finance Dictionary','Inflation','Listen podcasts','Index history','Stock index by country','Yahoo Finance'],command=self.optionmenu_callback,width=200)
         self.optMenu.grid(row=3, column=1, pady=10,columnspan=1, sticky="w")
 
         self.comMenu = ctk.CTkOptionMenu(self,
@@ -146,21 +152,20 @@ class App(ctk.CTk,tk.Menu):
         self.writeUrl=ctk.CTkCheckBox(self,text="Own RSS url?",variable=self.wUrl,onvalue="on",offvalue="off",command=self.showInput)
         #pady(10,0) tarkoittaa, että ylös lisätään 10 pikseliä tyhjää tilaa ja alas 0 pikseliä
         self.writeUrl.grid(row=2,column=7,sticky="ew")
-        self.ytUrl=ctk.StringVar()
-        self.youtubeUrl=ctk.CTkCheckBox(self,text="Youtube video",variable=self.ytUrl,onvalue="on",offvalue="off",command=self.showInput)
-        self.youtubeUrl.grid(row=3,column=7,sticky="ew")
+        self.financeDict=ctk.CTkOptionMenu(self,values=['Select','p/e','eps','adr','bear market'],command=self.dbconn.getFinanceTerm)
+        self.getTermBtn=ctk.CTkButton(self,text='Get data',command=lambda:self.dbconn.getData(self.textbox,self.codeEntry.get()))
 
         self.valueCB=ctk.CTkCheckBox(self,text="Graphics",command=self.an.DrawGraphics)
 
         self.cryptoCsv=ctk.CTkCheckBox(self,text="Save cryptos to CSV",command=lambda:self.opt.getCryptos())
 
         self.indexMenuByCountry=ctk.CTkOptionMenu(self,values=['Select','Finland','Germany','Japan','Poland'],command=lambda x:self.sc.scrapeIndex(x,self.textbox))
-        self.yfBtn=ctk.CTkButton(self,text="Use Yahoo Finance",width=100,command=lambda:self.ytf.findData(self.codeEntry.get(),self.textbox))
-        self.yfOptions=ctk.CTkOptionMenu(self,values=['Select','Recommendations','Major Holders'],command=lambda x: self.ytf.getOption(x,self.codeEntry.get(),self.textbox))
+       
+        self.yfOptions=ctk.CTkOptionMenu(self,values=['Select','Recommendations','Major Holders','Mutual fund hold.','Dividends'],command=lambda x: self.ytf.getOption(x,self.codeEntry.get(),self.textbox))
+
     def showDialog(self):
             
             self.dialog = ctk.CTkInputDialog(text="Enter the number of ETFs to display or an individual ETF ID to view its details:", title="Question")
-          
             response=self.dialog.get_input()
             #isdigit tarkistaa, sisältääkö merkkijono numeroita
             if response.isdigit():
@@ -206,17 +211,11 @@ class App(ctk.CTk,tk.Menu):
             self.urlInput.grid(row=4,column=7,sticky="EW")
             #focuosut eventin ja metodin sitominen toisiinsa.
             self.urlInput.bind('<FocusOut>',self.inputFocusOut)
-        elif self.ytUrl.get()=="on":
-            self.urlInput.grid(row=4,column=7,sticky="EW")
-            self.urlInput.bind('<FocusOut>',self.showYoutubeVideo)
+       
         else:
             self.urlInput.grid_forget()
         
-        
-    def showYoutubeVideo(self,event):
-            url = self.urlInput.get()
-            yt = YouTube(url)
-            webbrowser.open(url)
+     
           
     #event parametri on tapahtuma eli se kun kursori poistuu entry kentästä.
     def inputFocusOut(self,event):
@@ -236,8 +235,7 @@ class App(ctk.CTk,tk.Menu):
                 self.createStockBars.grid(row=6,column=2,sticky="E")
                 self.dividends.grid(row=6,column=3,sticky="E")
                 self.earnTranscript.grid(row=7,column=2,sticky="W")
-            elif self.choice=="Precious metals":
-                self.opt.createMetals(self.preciousMenu,self.codeEntry)
+           
             elif self.choice=="Crypto":
                 #self.cryptoCsv=ctk.CTkCheckBox(self,text="Save cryptos to CSV",command=lambda:self.opt.getCryptos())
                 self.newsAboutComp.grid(row=6,column=1,sticky="W")
@@ -263,9 +261,9 @@ class App(ctk.CTk,tk.Menu):
             elif self.choice=="Finance Dictionary":
                 self.codeEntry.grid(row=6,column=1,sticky="W",pady=5)
                 self.getBtn.grid_forget()
-                self.getTermBtn=ctk.CTkButton(self,text='Get data',command=lambda:self.dbconn.getData(self.textbox,self.codeEntry.get()))
+                #self.getTermBtn=ctk.CTkButton(self,text='Get data',command=lambda:self.dbconn.getData(self.textbox,self.codeEntry.get()))
                 self.getTermBtn.grid(row=5,column=1,sticky="E")
-                self.financeDict=ctk.CTkOptionMenu(self,values=['Select','p/e','eps','adr','bear market'],command=self.dbconn.getFinanceTerm)
+                #self.financeDict=ctk.CTkOptionMenu(self,values=['Select','p/e','eps','adr','bear market'],command=self.dbconn.getFinanceTerm)
                 self.financeDict.grid(row=5,column=1,sticky="W")
             elif choice=="Inflation":
                 self.getBtn.grid_forget()
@@ -286,6 +284,7 @@ class App(ctk.CTk,tk.Menu):
                  self.indexMenu.grid(row=5,column=1,sticky="W")
                  self.codeEntry.grid_forget()
                  self.getBtn.grid_forget()
+                 
             elif choice=='Stock index by country':
 
                 #self.indexMenuByCountry=ctk.CTkOptionMenu(self,values=['Select','Finland','Germany','Japan','Poland'],command=lambda x:self.sc.scrapeIndex(x,self.textbox))
@@ -294,42 +293,29 @@ class App(ctk.CTk,tk.Menu):
                 self.getBtn.grid_forget()
             
             elif choice=="Yahoo Finance":
-                self.codeEntry.grid(row=5, column=1, sticky="ew",pady=5)
+                
+                self.codeentryAc=AutocompleteEntry(self,completevalues=self.tickerList)
+                self.codeentryAc.grid(row=7,column=1,sticky="ew")
+                #self.codeEntry.grid(row=5, column=1, sticky="ew",pady=5)
+                self.codeEntry.grid_forget()
                 self.getBtn.grid_forget()
-                #self.yfBtn=ctk.CTkButton(self,text="Use Yahoo Finance",width=100,command=lambda:self.ytf.findData(self.codeEntry.get(),self.textbox,self))
-                self.yfBtn.grid(row=7,column=1,sticky="w",pady=10)
                 self.yfOptions.grid(row=6,column=1,sticky="w")
-               
 
-
-                
-                
+         #piilottaa dict oliossa olevat gridit              
         else:
-            #piilottaa gridit
-            self.codeEntry.grid_forget()
-            self.earnings.grid_forget()
-            self.preciousMenu.grid_forget()
-            self.comMenu.grid_forget()
-            
-            self.newsAboutComp.grid_forget()
-            self.createStockBars.grid_forget()
-            
-            self.podcasts.grid_forget()
-            
-            self.podstop.grid_forget()
-            self.cryptoCsv.grid_forget()
-            self.financeDict.grid_forget()
-            self.getTermBtn.grid_forget()
-            self.indexMenuByCountry.grid_forget()
-            self.yfBtn.grid_forget()
+            self.grids={'grid':self.codeEntry.grid_forget(),'grid':self.earnings.grid_forget(),'grid':self.comMenu.grid_forget(),'grid':self.newsAboutComp.grid_forget()
+                        ,'grid':self.createStockBars.grid_forget(),'grid':self.podcasts.grid_forget(),'grid':self.podstop.grid_forget(),'grid':self.cryptoCsv.grid_forget()
+                        ,'grid':self.financeDict.grid_forget(),'grid':self.getTermBtn.grid_forget(),'grid':self.indexMenuByCountry.grid_forget()
+                        ,'grid':self.codeentryAc.grid_forget(),'grid':self.yfOptions.grid_forget()}
+            self.grids['grid']
             
             #muutetaan buttonin tekstiä configuren avulla
             self.getBtn.configure(text="Get " +self.choice+" data")
+    
+        
     #commodity metodi suoritetaan heti, kun pudotusvalikosta on valittu jokin arvo, comm parametri
     # sisältää valitun arvon.
 
-        
-            
     def commodity_callback(self,comm):
         api_url="https://api.api-ninjas.com/v1/commodityprice?name={}".format(comm)
         response = requests.get(api_url, headers={'X-Api-Key': apk})
@@ -352,20 +338,7 @@ class App(ctk.CTk,tk.Menu):
         else:
             print("Error:", response.status_code, response.text)
     
-    def gold_callback(self,val):
-        api_url='https://api.api-ninjas.com/v1/goldprice'
-        response = requests.get(api_url, headers={'X-Api-Key': apk})
-        if response.status_code == requests.codes.ok:
-             respDict=json.loads(response.text)
-             for r in respDict:
-
-                self.textbox.insert('end',respDict[r])
-                self.textbox.insert('end',"\n")
-             self.price = respDict.get("price")
-             self.name=val
-             self.valueCB.grid(row=11,column=1,columnspan=3)
-             self.valueCB.configure(text=self.name+" Graphics") 
-
+    
     
     def selRssSource(self,url):
         self.url=url
