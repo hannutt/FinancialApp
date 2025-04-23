@@ -27,6 +27,7 @@ import webbrowser
 import vlc
 from Scraper import Scrape
 from CTkMessagebox import CTkMessagebox
+from yahooFinance import YahooFinance
 
 
 
@@ -44,7 +45,7 @@ class App(ctk.CTk,tk.Menu):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.font = ctk.CTkFont(family="Times", size=14)
-        self.words=['Crypto','Stocks','Precious metals','Commodities','History','Finance Dictionary','Inflation','Listen podcasts','Index history','Stock index by country']
+        self.words=['Crypto','Stocks','Precious metals','Commodities','History','Finance Dictionary','Inflation','Listen podcasts','Index history','Stock index by country','Yahoo Finance']
         self.title("Finance App")
         self.menubar=tk.Menu(self)
         self.config(menu=self.menubar)
@@ -54,6 +55,7 @@ class App(ctk.CTk,tk.Menu):
         self.ms=MarketStack()
         self.an=Apininjas()
         self.sc=Scrape()
+        self.ytf=YahooFinance()
 
         
         #App luokan textbox voidaan lähettää  options luokalle parametria command=lambda:o.currencyWidgets(self.textbox))
@@ -82,13 +84,13 @@ class App(ctk.CTk,tk.Menu):
         self.preciousMenu = ctk.CTkOptionMenu(self,
                                         values=["Gold"],command=self.gold_callback)
         self.optMenu = ctk.CTkOptionMenu(self,
-                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','History','Finance Dictionary','Inflation','Listen podcasts','Index history','Stock index by country'],command=self.optionmenu_callback,width=200)
+                                        values=['Select',"Crypto","Stocks",'Commodities','Precious metals','History','Finance Dictionary','Inflation','Listen podcasts','Index history','Stock index by country','Yahoo Finance'],command=self.optionmenu_callback,width=200)
         self.optMenu.grid(row=3, column=1, pady=10,columnspan=1, sticky="w")
 
         self.comMenu = ctk.CTkOptionMenu(self,
                                         values=["Oat","Platinum",'Gold','Palladium'],command=self.commodity_callback)
 
-        self.codeEntry = ctk.CTkEntry(self,placeholder_text="crypto/stock code",textvariable=self.inputField,validate="focusout", validatecommand=self.showInput)
+        self.codeEntry = ctk.CTkEntry(self,placeholder_text="crypto/stock code",textvariable=self.inputField,validate="focusout", validatecommand=self.showInput,width=200)
         self.earningsSV=ctk.StringVar()
         self.earnings=ctk.CTkCheckBox(self,text="Show earnings?", onvalue="on", offvalue="off", variable=self.earningsSV)
         self.newsAboutComp=ctk.CTkCheckBox(self,text="News?",command=lambda:self.news.companyNews(self.codeEntry.get(),self.textbox))
@@ -101,7 +103,8 @@ class App(ctk.CTk,tk.Menu):
         self.textbox=ctk.CTkTextbox(self,width=200,corner_radius=5,height=105,font=self.font)
      
         self.textbox.grid(row=9,column=1,sticky="ew",columnspan=1)
-
+        self.podcasts=ctk.CTkOptionMenu(self,values=['Select','Talking Real Money','The Real Investment Show Podcast'],command=self.opt.podcast)
+        self.podstop=ctk.CTkButton(self,text='Stop',width=20,command=self.opt.stopPodcast)
         #pikanäppäin bindaus, ctrl+m suoritaa majorIndexes metodin
         self.bind("<Control-m>",lambda x:self.sc.majorIndexes(x,self.textbox))
         self.bind("<Control-s>",self.opt.openTts)
@@ -149,6 +152,11 @@ class App(ctk.CTk,tk.Menu):
 
         self.valueCB=ctk.CTkCheckBox(self,text="Graphics",command=self.an.DrawGraphics)
 
+        self.cryptoCsv=ctk.CTkCheckBox(self,text="Save cryptos to CSV",command=lambda:self.opt.getCryptos())
+
+        self.indexMenuByCountry=ctk.CTkOptionMenu(self,values=['Select','Finland','Germany','Japan','Poland'],command=lambda x:self.sc.scrapeIndex(x,self.textbox))
+        self.yfBtn=ctk.CTkButton(self,text="Use Yahoo Finance",width=100,command=lambda:self.ytf.findData(self.codeEntry.get(),self.textbox))
+        self.yfOptions=ctk.CTkOptionMenu(self,values=['Select','Recommendations','Major Holders'],command=lambda x: self.ytf.getOption(x,self.codeEntry.get(),self.textbox))
     def showDialog(self):
             
             self.dialog = ctk.CTkInputDialog(text="Enter the number of ETFs to display or an individual ETF ID to view its details:", title="Question")
@@ -231,7 +239,7 @@ class App(ctk.CTk,tk.Menu):
             elif self.choice=="Precious metals":
                 self.opt.createMetals(self.preciousMenu,self.codeEntry)
             elif self.choice=="Crypto":
-                self.cryptoCsv=ctk.CTkCheckBox(self,text="Save cryptos to CSV",command=lambda:self.opt.getCryptos())
+                #self.cryptoCsv=ctk.CTkCheckBox(self,text="Save cryptos to CSV",command=lambda:self.opt.getCryptos())
                 self.newsAboutComp.grid(row=6,column=1,sticky="W")
                 self.cryptoCsv.grid(row=6,column=1,sticky="E")
             
@@ -265,11 +273,11 @@ class App(ctk.CTk,tk.Menu):
                 self.getInflationBtn.grid(row=7,column=1,columnspan=3,sticky="w",pady=10)
                 self.codeEntry.grid(row=5, column=1, sticky="ew")
             elif choice=="Listen podcasts":
-                self.podcasts=ctk.CTkOptionMenu(self,values=['Select','Talking Real Money','The Real Investment Show Podcast'],command=self.opt.podcast)
+                #self.podcasts=ctk.CTkOptionMenu(self,values=['Select','Talking Real Money','The Real Investment Show Podcast'],command=self.opt.podcast)
                 self.codeEntry.grid_forget()
                 self.getBtn.grid_forget()
                 self.podcasts.grid(row=5,column=1,sticky="W")
-                self.podstop=ctk.CTkButton(self,text='Stop',width=20,command=self.opt.stopPodcast)
+                #self.podstop=ctk.CTkButton(self,text='Stop',width=20,command=self.opt.stopPodcast)
                 self.podstop.grid(row=6,column=1,sticky="W",pady=10)
 
             elif choice=='Index history':
@@ -280,10 +288,19 @@ class App(ctk.CTk,tk.Menu):
                  self.getBtn.grid_forget()
             elif choice=='Stock index by country':
 
-                self.indexMenuByCountry=ctk.CTkOptionMenu(self,values=['Select','Finland','Germany','Japan','Poland'],command=lambda x:self.sc.scrapeIndex(x,self.textbox))
+                #self.indexMenuByCountry=ctk.CTkOptionMenu(self,values=['Select','Finland','Germany','Japan','Poland'],command=lambda x:self.sc.scrapeIndex(x,self.textbox))
                 self.indexMenuByCountry.grid(row=5,column=1,sticky="W")
                 self.codeEntry.grid_forget()
                 self.getBtn.grid_forget()
+            
+            elif choice=="Yahoo Finance":
+                self.codeEntry.grid(row=5, column=1, sticky="ew",pady=5)
+                self.getBtn.grid_forget()
+                #self.yfBtn=ctk.CTkButton(self,text="Use Yahoo Finance",width=100,command=lambda:self.ytf.findData(self.codeEntry.get(),self.textbox,self))
+                self.yfBtn.grid(row=7,column=1,sticky="w",pady=10)
+                self.yfOptions.grid(row=6,column=1,sticky="w")
+               
+
 
                 
                 
@@ -296,9 +313,15 @@ class App(ctk.CTk,tk.Menu):
             
             self.newsAboutComp.grid_forget()
             self.createStockBars.grid_forget()
+            
             self.podcasts.grid_forget()
+            
             self.podstop.grid_forget()
             self.cryptoCsv.grid_forget()
+            self.financeDict.grid_forget()
+            self.getTermBtn.grid_forget()
+            self.indexMenuByCountry.grid_forget()
+            self.yfBtn.grid_forget()
             
             #muutetaan buttonin tekstiä configuren avulla
             self.getBtn.configure(text="Get " +self.choice+" data")
