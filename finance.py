@@ -29,7 +29,7 @@ import vlc
 from Scraper import Scrape
 from CTkMessagebox import CTkMessagebox
 from yahooFinance import YahooFinance
-
+from googleDrive import GDrive
 
 
 #Api-avain on talletettu env-muuttujaan, tässä haetaan sen sisältämä merkkijono
@@ -57,20 +57,9 @@ class App(ctk.CTk,tk.Menu):
         self.an=Apininjas()
         self.sc=Scrape()
         self.ytf=YahooFinance()
-        
-        #luetaan kaikki data tickers.txt tiedostosta ja lisätään data tickerlist listaan.
-        self.tickerFile=open("tickers.txt","r")
-       
-        self.tickerData=self.tickerFile.read()
-        
-        self.tickerList=self.tickerData.split("\n")
-        
-        self.tickerFile.close()
-        self.cryptoFile=open("cryptos.txt","r")
-        self.cryptoData=self.cryptoFile.read()
-        self.cryptoList=self.cryptoData.split("\n")
-        self.cryptoFile.close()
+        self.gd=GDrive()
 
+        self.tickerPath=""
         
         #App luokan textbox voidaan lähettää  options luokalle parametria command=lambda:o.currencyWidgets(self.textbox))
         #self.menubar.add_command(label='Cur. convert',command=lambda:self.opt.currencyWidgets())
@@ -79,6 +68,8 @@ class App(ctk.CTk,tk.Menu):
         self.menubar.add_command(label='earnings',command=lambda:self.an.fetchOnlyEarnings(self.codeEntry.get()))
         self.menubar.add_command(label='Send email',command=lambda:self.opt.emailOption())
         self.menubar.add_command(label='Newest ETFs',command=lambda:self.showDialog())
+        
+        
         
         
         #self.add_cascade()
@@ -116,7 +107,7 @@ class App(ctk.CTk,tk.Menu):
         self.textbox=ctk.CTkTextbox(self,width=200,corner_radius=5,height=105,font=self.font)
 
         self.acVar=StringVar()
-        self.useAC=ctk.CTkCheckBox(self,text="Autocompete",variable=self.acVar, onvalue="on",offvalue="off",command=self.showAc)
+        self.useAC=ctk.CTkCheckBox(self,text="Autocomplete",variable=self.acVar, onvalue="on",offvalue="off",command=self.showAc)
         
      
         self.textbox.grid(row=9,column=1,sticky="ew",columnspan=1)
@@ -173,6 +164,17 @@ class App(ctk.CTk,tk.Menu):
         self.indexMenuByCountry=ctk.CTkOptionMenu(self,values=['Select','Finland','Germany','Japan','Poland'],command=lambda x:self.sc.scrapeIndex(x,self.textbox))
        
         self.yfOptions=ctk.CTkOptionMenu(self,values=['Select','Recommendations','Major Holders','Mutual fund hold.','Dividends'],command=lambda x: self.ytf.getOption(x,self.codeEntry.get(),self.textbox))
+    
+    #luetaan kaikki data tickers.txt tiedostosta ja lisätään data tickerlist listaan.
+    def setAcText(self):
+         self.tickerFile=open("tickers.txt","r")
+         self.tickerData=self.tickerFile.read()
+         self.tickerList=self.tickerData.split("\n")
+         self.tickerFile.close()
+         self.cryptoFile=open("cryptos.txt","r")
+         self.cryptoData=self.cryptoFile.read()
+         self.cryptoList=self.cryptoData.split("\n")
+         self.cryptoFile.close()
         
 
     def showDialog(self):
@@ -372,6 +374,14 @@ class App(ctk.CTk,tk.Menu):
             self.textbox.insert("end",f.title)
     
     def showAc(self):
+        #jos tiedostot on olemassa
+        if os.path.exists("tickers.txt") and os.path.exists("cryptos.txt"):
+            self.setAcText()
+        #jos tiedostoja ei ole olemassa
+        if not os.path.exists("tickers.txt") and not os.path.exists("cryptos.txt"):
+            self.gd.connect()
+            self.setAcText()
+            
         if self.acVar.get()=="on" and self.choice=="Stocks":
             self.codeEntry.grid_forget()
             self.codeentryAc=AutocompleteEntry(self,completevalues=self.tickerList)

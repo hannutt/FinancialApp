@@ -1,5 +1,5 @@
 Project keywords: CustomTkinter, REST-API, Cloud-based NoSQL, Data processing, Mailtrap e-mail integration,
-Web-Scraping, Beautiful Soup 4, Pandas, OpenAI
+Web-Scraping, Beautiful Soup 4, Pandas, OpenAI, Google Drive integration, PyDrive2
 
 ABOUT THE APPLICATION
 
@@ -69,11 +69,13 @@ is retrieved by entering the text AAPL in the input field of the application. Th
 
 AUTOMATIC TEXT FILLING FOR STOCKS AND CRYPTOCURRENCY
 
-Since the stock and cryptocurrency search works with trading codes, the user can also choose automatic text input to make it easier to find the right code. The application uses two text files, one containing the most common stock trading codes and the other containing the most common cryptocurrency codes.
+Since the stock and cryptocurrency search works with trading codes, the user can also choose automatic text input to make it easier to find the right code. The application uses two text files, one containing the most common stock trading codes and the other containing the most common cryptocurrency codes. 
 
-If the user selects the autocomplete feature from the checkbox, the application displays the TTkwidgets Autocomplete Entry field, which uses one of two text files to provide the user with suggestions based on the letters the user types. For example, if the user searches for stock quotes and types the letters MSF in the field, the application will provide options that start with the letters MSF in the text file. See the example image below
+Text The files are stored in Google Drive. First, the program checks whether the files are found in the application's root directory using the OS.path.exists method. If the files are found, their contents are loaded into list elements that the text completion component uses. If the files are not found, the application connects to Google Drive using PyDrive and retrieves the files. Before retrieving the files, authentication is performed using the GoogleAuth method. Currently, authentication only accepts credentials that I have defined.
 
-![alt text](images/autocompete.png)
+If the user selects the autocomplete feature from the checkbox, the application displays the TTkwidgets Autocomplete Entry field, which uses one of two text files to provide the user with suggestions based on the letters the user types. For example, if the user searches for stock quotes and types the letters MSF in the field, the application will provide options that start with the letters MSF in the text file. See the example image below.
+
+![alt text](images/autocomplete.png)
 
 
 FIND NEWS BY STOCK / CRYPTO / COMMODITY NAME

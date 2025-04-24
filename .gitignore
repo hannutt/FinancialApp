@@ -1,1 +1,5 @@
 .env
+client_secrets.json
+cryptos.txt
+googleDrive.py
+__pycache__/googleDrive.cpython-311.pyc
