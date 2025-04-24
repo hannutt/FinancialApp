@@ -164,7 +164,8 @@ class App(ctk.CTk,tk.Menu):
         self.indexMenuByCountry=ctk.CTkOptionMenu(self,values=['Select','Finland','Germany','Japan','Poland'],command=lambda x:self.sc.scrapeIndex(x,self.textbox))
        
         self.yfOptions=ctk.CTkOptionMenu(self,values=['Select','Recommendations','Major Holders','Mutual fund hold.','Dividends'],command=lambda x: self.ytf.getOption(x,self.codeEntry.get(),self.textbox))
-    
+        self.historyCB=ctk.CTkCheckBox(self,text="Get history",command=lambda:self.ms.historicalData(self.codeEntry.get(),self.textbox,self.fromDate.get(),self.toDate.get()))
+        self.createHistoryGraph=ctk.CTkCheckBox(self,text="History graphics",command=lambda:self.ytf.yfHistory(self.fromDate.get(),self.toDate.get(),self.codeEntry.get()))
     #luetaan kaikki data tickers.txt tiedostosta ja lisätään data tickerlist listaan.
     def setAcText(self):
          self.tickerFile=open("tickers.txt","r")
@@ -265,11 +266,12 @@ class App(ctk.CTk,tk.Menu):
 
             elif self.choice=="History":
                 self.codeEntry.grid(row=5, column=1,sticky="W")
-                self.historyCB=ctk.CTkCheckBox(self,text="Get history",command=lambda:self.ms.historicalData(self.codeEntry.get(),self.textbox,self.fromDate.get(),self.toDate.get()))
+              
                 
-                self.historyCB.grid(row=5,column=1,sticky="E")
+                self.historyCB.grid(row=7,column=1,sticky="W")
+                self.createHistoryGraph.grid(row=7,column=1,sticky="E")
                 self.fromDate=ctk.CTkEntry(self,placeholder_text="FROM (YYYY-MM-DD)")
-                self.fromDate.grid(row=6,column=1,sticky="W")
+                self.fromDate.grid(row=6,column=1,sticky="EW")
                 self.fromDate.bind("<Button>",self.calendarMethod)
                 self.toDate=ctk.CTkEntry(self,placeholder_text="TO (YYYY-MM-DD)")
                 self.toDate.bind("<Button>",self.setCalDateToEnd)

@@ -130,14 +130,17 @@ CREATING GRAPHICS FROM SEARCHED VALUES
 The application uses the Matplotlib library to create graphs of, for example, stock prices searched by the user.
 A finished chart containing the name of a stock, cryptocurrency or commodity and its current value as a bar chart.
 
-The user can also create more complex stock value charts. This figure shows the next three estimated EPS numbers for Apple stock. The EPS numbers are taken from the API's JSON response and stored in a Python list.
-The Matplotlib library draws the figure based on the list values. List values ​​are sorted from smallest to largest using the Python List Sort method.
+The user can also create more complex stock value charts. Example where the user has searched for closing prices and trading volumes for Nvidia shares for the period 3/20/25-4/22/25. Closing prices are displayed as a line chart and trading volumes as a bar chart. In this example, the data is retrieved using the yFinance (Yahoo Finance) API.
+
+![alt text](images/nvdaHistoryData.png)
+
+This figure shows the next three estimated EPS numbers for Apple stock. The EPS numbers are taken from the API's JSON response and stored in a Python list. The Matplotlib library draws the figure based on the list values. List values ​​are sorted from smallest to largest using the Python List Sort method.
 
 ![alt text](images/plotApple.png)
 
-Another example where the user has retrieved Microsoft stock data (opening price, lowest price, highest price, and closing price) from the MarketStack API and the program visualizes the data in a vertical bar chart.
 
-![alt text](images/eodData.png)
+
+
 
 HISTORICAL STOCK DATA
 

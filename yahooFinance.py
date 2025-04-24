@@ -1,4 +1,5 @@
 import yfinance as yf
+import matplotlib.pyplot as plt
 class YahooFinance():
      def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -38,6 +39,29 @@ class YahooFinance():
          ticker = yf.Ticker(self.stockcode)
          dividends=ticker.get_dividends(proxy=None, period='max')
          self.tbox.insert("end",dividends)
+    
+     def yfHistory(self,startdate,enddate,stockname):
+         stock = yf.Ticker(stockname)
+         data = stock.history(start=startdate, end=enddate)
+
+         fig, ax1 = plt.subplots(figsize=(14, 7))
+
+         ax1.set_xlabel('Date')
+         ax1.set_ylabel('Close Price', color='tab:red')
+         ax1.plot(data.index, data['Close'], color='tab:red', label='Close Price')
+         ax1.tick_params(axis='y', labelcolor='tab:red')
+
+         ax2 = ax1.twinx()
+         ax2.set_ylabel('Volume', color='tab:orange')
+         ax2.bar(data.index, data['Volume'], color='tab:cyan', alpha=0.3, label='Volume')
+         ax2.tick_params(axis='y', labelcolor='tab:cyan')
+
+         plt.title(f'{stockname} Stock Price and Volume from {startdate} to {enddate}')
+         fig.tight_layout()
+         fig.legend(loc='upper left', bbox_to_anchor=(0.1,0.9))
+         plt.grid(True)
+         plt.show()
+         
     
        
        
