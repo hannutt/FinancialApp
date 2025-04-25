@@ -99,9 +99,7 @@ class App(ctk.CTk,tk.Menu):
         self.earnings=ctk.CTkCheckBox(self,text="Show earnings?", onvalue="on", offvalue="off", variable=self.earningsSV)
         self.newsAboutComp=ctk.CTkCheckBox(self,text="News?",command=lambda:self.news.companyNews(self.codeEntry.get(),self.textbox))
         
-        self.createStockBars=ctk.CTkCheckBox(self,text="EOD data",command=lambda:self.ms.showEod(self.codeEntry.get()))
-        self.dividends=ctk.CTkCheckBox(self,text="Dividends",command=lambda:self.ms.getDividends(self.codeEntry.get(),self.textbox))
-        self.earnTranscript=ctk.CTkCheckBox(self,text="Earning call",command=lambda:self.an.earningCalls(self.codeEntry.get(),self.textbox,self.earnTranscript))
+      
         self.getBtn=ctk.CTkButton(self,text="Get data",command=self.selectMethods,width=200)
         self.getBtn.grid(row=7,column=1,columnspan=3,sticky="w",pady=10)
         self.textbox=ctk.CTkTextbox(self,width=200,corner_radius=5,height=105,font=self.font)
@@ -164,9 +162,26 @@ class App(ctk.CTk,tk.Menu):
         self.indexMenuByCountry=ctk.CTkOptionMenu(self,values=['Select','Finland','Germany','Japan','Poland'],command=lambda x:self.sc.scrapeIndex(x,self.textbox))
        
         self.yfOptions=ctk.CTkOptionMenu(self,values=['Select','Recommendations','Major Holders','Mutual fund hold.','Dividends'],command=lambda x: self.ytf.getOption(x,self.codeEntry.get(),self.textbox))
-        self.historyCB=ctk.CTkCheckBox(self,text="Get history",command=lambda:self.ms.historicalData(self.codeEntry.get(),self.textbox,self.fromDate.get(),self.toDate.get()))
-        self.createHistoryGraph=ctk.CTkCheckBox(self,text="History graphics",command=lambda:self.ytf.yfHistory(self.fromDate.get(),self.toDate.get(),self.codeEntry.get()))
-    #luetaan kaikki data tickers.txt tiedostosta ja lisätään data tickerlist listaan.
+        #self.historyCB=ctk.CTkCheckBox(self,text="Get history",command=lambda:self.ms.historicalData(self.codeEntry.get(),self.textbox,self.fromDate.get(),self.toDate.get()))
+        self.historyOptions=ctk.CTkSegmentedButton(self,values=['Get history','History graph','Intraday'],command=lambda sel:self.ytf.yfHistory(sel,self.fromDate.get(),self.toDate.get(),self.codeEntry.get(),self.textbox))
+        self.stockOptions=ctk.CTkSegmentedButton(self, values=['Earnings','News','Dividends','Earning call'],command=self.getStockOption)
+        self.cryptoOptions=ctk.CTkSegmentedButton(self,values=['Save cryptos to CSV'],command=self.getStockOption)
+        self.quantity=ctk.CTkComboBox(self,values=['1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '4h', '1d', '5d', '1wk', '1mo', '3mo'],command=self.ytf.getComboBoxValue,width=70)
+        self.quantity.set('1m')
+   
+
+    def getStockOption(self,val):
+        if val=="News":
+            self.news.companyNews(self.codeEntry.get(),self.textbox)
+        elif val=='Dividends':
+            self.ms.getDividends(self.codeEntry.get(),self.textbox)
+        elif val=="Earning call":
+            self.an.earningCalls(self.codeEntry.get(),self.textbox)
+        elif val=="Save cryptos to CSV":
+            self.opt.getCryptos()
+
+
+ #luetaan kaikki data tickers.txt tiedostosta ja lisätään data tickerlist listaan.
     def setAcText(self):
          self.tickerFile=open("tickers.txt","r")
          self.tickerData=self.tickerFile.read()
@@ -189,9 +204,6 @@ class App(ctk.CTk,tk.Menu):
             if response.isdigit()==False:
                 self.sc.getEtfData(self.textbox,response)
             
-            
-         
-    
     def speechReg(self):
         r = sr.Recognizer()
         with sr.Microphone() as source:
@@ -217,6 +229,7 @@ class App(ctk.CTk,tk.Menu):
         self.klRss.deselect()
         self.invRss.deselect()
         self.writeUrl.deselect()
+        self.codeEntry.delete(0,"end")
 
     #käyttäjän antama rss-syötteen osoite
     def showInput(self):
@@ -245,19 +258,13 @@ class App(ctk.CTk,tk.Menu):
         if self.choice in self.words:
             self.codeEntry.grid(row=5, column=1, sticky="ew")
             if self.choice=="Stocks":
+                self.stockOptions.grid(row=6,column=1,sticky="W",pady=10)
                 self.useAC.grid(row=4,column=1,sticky="w",pady=10)
-                self.earnings.grid(row=6,column=1,sticky="W")
-                self.newsAboutComp.grid(row=6,column=1,sticky="E")
-                self.createStockBars.grid(row=6,column=2,sticky="E")
-                self.dividends.grid(row=6,column=3,sticky="E")
-                self.earnTranscript.grid(row=7,column=2,sticky="W")
+           
            
             elif self.choice=="Crypto":
                 self.useAC.grid(row=4,column=1,sticky="w",pady=10)
-                
-                #self.cryptoCsv=ctk.CTkCheckBox(self,text="Save cryptos to CSV",command=lambda:self.opt.getCryptos())
-                self.newsAboutComp.grid(row=6,column=1,sticky="W")
-                self.cryptoCsv.grid(row=6,column=1,sticky="E")
+                self.cryptoOptions.grid(row=6,column=1,sticky="E")
             
             elif self.choice=="Commodities":
                 
@@ -266,16 +273,14 @@ class App(ctk.CTk,tk.Menu):
 
             elif self.choice=="History":
                 self.codeEntry.grid(row=5, column=1,sticky="W")
-              
-                
-                self.historyCB.grid(row=7,column=1,sticky="W")
-                self.createHistoryGraph.grid(row=7,column=1,sticky="E")
+                self.historyOptions.grid(row=7,column=1,sticky="W")
                 self.fromDate=ctk.CTkEntry(self,placeholder_text="FROM (YYYY-MM-DD)")
                 self.fromDate.grid(row=6,column=1,sticky="EW")
                 self.fromDate.bind("<Button>",self.calendarMethod)
                 self.toDate=ctk.CTkEntry(self,placeholder_text="TO (YYYY-MM-DD)")
                 self.toDate.bind("<Button>",self.setCalDateToEnd)
                 self.toDate.grid(row=6,column=1,sticky="E")
+                self.quantity.grid(row=7,column=2,sticky="E",padx=5)
                 self.getBtn.grid_forget()
             elif self.choice=="Finance Dictionary":
                 self.codeEntry.grid(row=6,column=1,sticky="W",pady=5)
@@ -323,9 +328,9 @@ class App(ctk.CTk,tk.Menu):
          #piilottaa dict oliossa olevat gridit              
         else:
             self.grids={'grid':self.codeEntry.grid_forget(),'grid':self.earnings.grid_forget(),'grid':self.comMenu.grid_forget(),'grid':self.newsAboutComp.grid_forget()
-                        ,'grid':self.createStockBars.grid_forget(),'grid':self.podcasts.grid_forget(),'grid':self.podstop.grid_forget(),'grid':self.cryptoCsv.grid_forget()
+                        ,'grid':self.podcasts.grid_forget(),'grid':self.podstop.grid_forget()
                         ,'grid':self.financeDict.grid_forget(),'grid':self.getTermBtn.grid_forget(),'grid':self.indexMenuByCountry.grid_forget()
-                        ,'grid':self.codeentryAc.grid_forget(),'grid':self.yfOptions.grid_forget()}
+                        ,'grid':self.codeentryAc.grid_forget(),'grid':self.yfOptions.grid_forget(),'grid':self.fromDate.grid_forget(),'grid':self.toDate.grid_forget()}
             self.grids['grid']
             
             #muutetaan buttonin tekstiä configuren avulla
@@ -398,13 +403,9 @@ class App(ctk.CTk,tk.Menu):
             
 
     def selectMethods(self):
-        print(self.earningsSV.get())
+    
         #jos stocks on valittu pudotusvalikosta earning cb on valittu
-        if self.choice=="Stocks" and self.earningsSV.get()=="on":
-            self.an.fetchData(self.textbox,self.codeEntry.get(),self.valueCB)
-            self.an.fetchEarnings(self.textbox,self.codeEntry.get())
-        elif self.choice=="Stocks":
-           
+        if self.choice=="Stocks":   
             self.an.fetchData(self.textbox,self.codeEntry.get(),self.valueCB)
         elif self.choice=="Crypto":
             self.an.fetchCryptoData(self.textbox,self.valueCB,self.codeEntry.get())
@@ -417,7 +418,7 @@ class App(ctk.CTk,tk.Menu):
     
     def calendarMethod(self,event):
         self.cal = DateEntry(self, date_pattern="yyyy-mm-dd")
-        self.cal.grid(row=7,column=1,sticky="W",pady=10)
+        self.cal.grid(row=8,column=1,sticky="W",pady=10)
         self.cal.bind("<FocusOut>",self.setCalDate) 
     
     def setCalDate(self,event):
@@ -428,7 +429,7 @@ class App(ctk.CTk,tk.Menu):
         
     def setCalDateToEnd(self,event):
          self.cal = DateEntry(self, date_pattern="yyyy-mm-dd")
-         self.cal.grid(row=7,column=1,sticky="W",pady=10)
+         self.cal.grid(row=8,column=1,sticky="W",pady=10)
          self.cal.bind("<FocusOut>",self.setCalDateToEndField)
             
     def setCalDateToEndField(self,event):

@@ -119,7 +119,7 @@ class Apininjas():
         if response.status_code == requests.codes.ok:
             tbox.insert("end",response.text)
       
-      def earningCalls(self,ticker,tbox,earncb):
+      def earningCalls(self,ticker,tbox):
             
             self.dialog = ctk.CTkInputDialog(text="This feature returns a lot of information, how many records do you want to see?", title="Question")  
             response=self.dialog.get_input()
@@ -139,6 +139,6 @@ class Apininjas():
                   else:
                        tbox.insert("end",final)
               
-              earncb.deselect()
+        
               
     
