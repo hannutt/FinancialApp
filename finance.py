@@ -138,7 +138,7 @@ class App(ctk.CTk,tk.Menu):
 
         #zoomintext metodi saa parametrina fontin tyypin (self.font) ja fontin koon (self.font._size)
         self.tts=ctk.CTkButton(self,width=20,text="TTS",command=lambda:self.opt.convertTts(self.textbox.get('1.0',END)))
-        self.tts.grid(row=8,column=2)
+        self.tts.grid(row=9,column=2,sticky="n")
         self.zoomIn=ctk.CTkButton(self,text="+",width=50,command=lambda:self.opt.zoomInText(self.font,self.font._size))
         self.zoomIn.grid(row=9,column=2,padx=10)
         self.zoomOut=ctk.CTkButton(self,text="-",width=50,command=lambda:self.opt.zoomOutText(self.font,self.font._size))
@@ -273,14 +273,14 @@ class App(ctk.CTk,tk.Menu):
 
             elif self.choice=="History":
                 self.codeEntry.grid(row=5, column=1,sticky="W")
-                self.historyOptions.grid(row=7,column=1,sticky="W")
+                self.historyOptions.grid(row=7,column=1,sticky="W",pady=10)
                 self.fromDate=ctk.CTkEntry(self,placeholder_text="FROM (YYYY-MM-DD)")
-                self.fromDate.grid(row=6,column=1,sticky="EW")
+                self.fromDate.grid(row=6,column=1,sticky="W",pady=10)
                 self.fromDate.bind("<Button>",self.calendarMethod)
                 self.toDate=ctk.CTkEntry(self,placeholder_text="TO (YYYY-MM-DD)")
                 self.toDate.bind("<Button>",self.setCalDateToEnd)
                 self.toDate.grid(row=6,column=1,sticky="E")
-                self.quantity.grid(row=7,column=2,sticky="E",padx=5)
+                self.quantity.grid(row=7,column=1,sticky="E",padx=5)
                 self.getBtn.grid_forget()
             elif self.choice=="Finance Dictionary":
                 self.codeEntry.grid(row=6,column=1,sticky="W",pady=5)
