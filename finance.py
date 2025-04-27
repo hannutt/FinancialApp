@@ -46,7 +46,7 @@ class App(ctk.CTk,tk.Menu):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.font = ctk.CTkFont(family="Times", size=14)
-        self.words=['Crypto','Stocks','Commodities','History','Finance Dictionary','Inflation','Listen podcasts','Index history','Stock index by country','Yahoo Finance']
+        self.words=['Crypto','Stocks','Commodities','History','Finance Dictionary','Listen podcasts','Index history','Stock index by country','Yahoo Finance']
         self.title("Finance App")
         self.menubar=tk.Menu(self)
         self.config(menu=self.menubar)
@@ -87,7 +87,7 @@ class App(ctk.CTk,tk.Menu):
         #pudotusvalikko
        
         self.optMenu = ctk.CTkOptionMenu(self,
-                                        values=['Select',"Crypto","Stocks",'Commodities','History','Finance Dictionary','Inflation','Listen podcasts','Index history','Stock index by country','Yahoo Finance'],command=self.optionmenu_callback,width=200)
+                                        values=['Select',"Crypto","Stocks",'Commodities','History','Finance Dictionary','Listen podcasts','Index history','Stock index by country','Yahoo Finance'],command=self.optionmenu_callback,width=200)
         self.optMenu.grid(row=3, column=1, pady=10,columnspan=1, sticky="w")
 
         self.comMenu = ctk.CTkOptionMenu(self,
@@ -160,7 +160,7 @@ class App(ctk.CTk,tk.Menu):
 
         self.indexMenuByCountry=ctk.CTkOptionMenu(self,values=['Select','Finland','Germany','Japan','Poland'],command=lambda x:self.sc.scrapeIndex(x,self.textbox))
        
-        self.yfOptions=ctk.CTkOptionMenu(self,values=['Select','Recommendations','Major Holders','Mutual fund hold.','Dividends'],command=lambda x: self.ytf.getOption(x,self.codeEntry.get(),self.textbox))
+        self.yfOptions=ctk.CTkOptionMenu(self,values=['Select','Recommendations','Major Holders','Mutual fund hold.','Dividends','Multiple tickers','General'],command=lambda x: self.ytf.getOption(x,self.codeEntry.get(),self.textbox,self.valueCB,self.tickerBtn,self.codeEntry,self.getMultipleBtn))
         #self.historyCB=ctk.CTkCheckBox(self,text="Get history",command=lambda:self.ms.historicalData(self.codeEntry.get(),self.textbox,self.fromDate.get(),self.toDate.get()))
         self.historyOptions=ctk.CTkSegmentedButton(self,values=['Get history','History graph','Intraday'],command=lambda sel:self.ytf.yfHistory(sel,self.fromDate.get(),self.toDate.get(),self.codeEntry.get(),self.textbox))
         self.stockOptions=ctk.CTkSegmentedButton(self, values=['Earnings','News','Dividends','Earning call'],command=self.getStockOption)
@@ -170,6 +170,10 @@ class App(ctk.CTk,tk.Menu):
         self.pressTab=ctk.CTkLabel(self,text="Press tab",fg_color="red")
         self.fromDate=ctk.CTkEntry(self,placeholder_text="FROM (YYYY-MM-DD)")
         self.toDate=ctk.CTkEntry(self,placeholder_text="TO (YYYY-MM-DD)")
+        #lambda x: voidaan lähettää option menun valinnan lisäksi muita parametreja.
+        self.indexMenu=ctk.CTkOptionMenu(self,values=['Select','NASDAQ 100','DAX'],command=lambda x:self.sc.stockIndex(x,self.textbox))
+        self.tickerBtn=ctk.CTkButton(self,text="Set",command=self.ytf.setTickerToList)
+        self.getMultipleBtn=ctk.CTkButton(self,text="Get multiple",command=lambda:self.ytf.getMultipleTickers)
         
         
    
@@ -246,8 +250,6 @@ class App(ctk.CTk,tk.Menu):
        
         else:
             self.urlInput.grid_forget()
-        
-     
           
     #event parametri on tapahtuma eli se kun kursori poistuu entry kentästä.
     def inputFocusOut(self,event):
@@ -257,75 +259,54 @@ class App(ctk.CTk,tk.Menu):
     
         
     def optionmenu_callback(self,choice):
+       
         self.choice=choice
+        print(self.choice)
         #tarkistus, onko valittu arvo words-listassa
         if self.choice in self.words:
-            self.codeEntry.grid(row=5, column=1, sticky="ew")
+            self.codeEntry.grid(row=5, column=1, sticky="ew",pady=10)
             if self.choice=="Stocks":
-                self.stockOptions.grid(row=6,column=1,sticky="W",pady=10)
-                self.useAC.grid(row=4,column=1,sticky="w",pady=10)
-           
-           
+                self.us.createStock(self.stockOptions,self.useAC)
+              
             elif self.choice=="Crypto":
-                self.useAC.grid(row=4,column=1,sticky="w",pady=10)
-                self.cryptoOptions.grid(row=6,column=1,sticky="E")
-            
+                self.us.createCrypto(self.cryptoOptions,self.useAC)
+                
             elif self.choice=="Commodities":
                 self.us.createCommodity(self.comMenu,self.codeEntry,self.getBtn)
 
             elif self.choice=="History":
-                self.us.historyComponents(self.codeEntry,self.historyOptions,self.fromDate,self.toDate,self.quantity,self.getBtn,self.useAC)
+                self.us.historyComponents(self.codeEntry,self.historyOptions,self.fromDate,self.toDate,self.quantity,self.getBtn,self.useAC,self.pressTab)
                
-                
             elif self.choice=="Finance Dictionary":
                 self.us.createDictionary(self.codeEntry,self.getBtn,self.getTermBtn,self.financeDict)
-            
-            elif choice=="Inflation":
-                self.getBtn.grid_forget()
-                self.getInflationBtn=ctk.CTkButton(self,text="Get inflation",command=lambda:self.ms.getInflation(self.codeEntry.get(),self.textbox))
-                self.getInflationBtn.grid(row=7,column=1,columnspan=3,sticky="w",pady=10)
-                self.codeEntry.grid(row=5, column=1, sticky="ew")
+           
             elif choice=="Listen podcasts":
-                #self.podcasts=ctk.CTkOptionMenu(self,values=['Select','Talking Real Money','The Real Investment Show Podcast'],command=self.opt.podcast)
-                self.codeEntry.grid_forget()
-                self.getBtn.grid_forget()
-                self.podcasts.grid(row=5,column=1,sticky="W")
-                #self.podstop=ctk.CTkButton(self,text='Stop',width=20,command=self.opt.stopPodcast)
-                self.podstop.grid(row=6,column=1,sticky="W",pady=10)
-
+                self.us.createPodcast(self.codeEntry,self.getBtn,self.podcasts,self.podstop)
+             
             elif choice=='Index history':
-                 #lambda x: voidaan lähettää option menun valinnan lisäksi muita parametreja.
-                 self.indexMenu=ctk.CTkOptionMenu(self,values=['Select','NASDAQ 100','DAX'],command=lambda x:self.sc.stockIndex(x,self.textbox))
                  self.indexMenu.grid(row=5,column=1,sticky="W")
                  self.codeEntry.grid_forget()
                  self.getBtn.grid_forget()
                  
             elif choice=='Stock index by country':
-
-                #self.indexMenuByCountry=ctk.CTkOptionMenu(self,values=['Select','Finland','Germany','Japan','Poland'],command=lambda x:self.sc.scrapeIndex(x,self.textbox))
-                self.indexMenuByCountry.grid(row=5,column=1,sticky="W")
-                self.codeEntry.grid_forget()
-                self.getBtn.grid_forget()
+                self.us.createIndex(self.indexMenuByCountry,self.codeEntry,self.getBtn)
             
             elif choice=="Yahoo Finance":
-                self.getBtn.grid_forget()
-                self.useAC.grid(row=4,column=1,sticky="W")
-                self.yfOptions.grid(row=4,column=1,sticky="E")
-                self.codeEntry.grid(row=5,column=1,sticky="W")
+                self.us.createYahooFinance(self.getBtn,self.useAC,self.yfOptions,self.codeEntry)
+
          #piilottaa dict oliossa olevat gridit              
         else:
             self.grids={'grid':self.codeEntry.grid_forget(),'grid':self.earnings.grid_forget(),'grid':self.comMenu.grid_forget(),'grid':self.newsAboutComp.grid_forget()
                         ,'grid':self.podcasts.grid_forget(),'grid':self.podstop.grid_forget()
                         ,'grid':self.financeDict.grid_forget(),'grid':self.getTermBtn.grid_forget(),'grid':self.indexMenuByCountry.grid_forget()
                         ,'grid':self.useAC.grid_forget(),'grid':self.yfOptions.grid_forget(),'grid':self.fromDate.grid_forget(),
-                         'grid':self.toDate.grid_forget(),'grid':self.cryptoOptions.grid_forget(),'grid':self.historyOptions.grid_forget(),'grid':self.quantity.grid_forget()}
+                         'grid':self.toDate.grid_forget(),'grid':self.cryptoOptions.grid_forget(),'grid':self.historyOptions.grid_forget(),'grid':self.quantity.grid_forget()
+                         ,'grid':self.stockOptions.grid_forget()}
                         
             self.grids['grid']
             
             #muutetaan buttonin tekstiä configuren avulla
-            self.getBtn.configure(text="Get " +self.choice+" data")
-    
-        
+            self.getBtn.configure(text="Get " +self.choice+" data")     
     #commodity metodi suoritetaan heti, kun pudotusvalikosta on valittu jokin arvo, comm parametri
     # sisältää valitun arvon.
 
@@ -351,13 +332,10 @@ class App(ctk.CTk,tk.Menu):
         else:
             print("Error:", response.status_code, response.text)
     
-    
-    
     def selRssSource(self,url):
         self.url=url
         self.fetchRssData()
       
-
     def fetchRssData(self):
         #ssl-handshake
         if hasattr(ssl, '_create_unverified_context'):
@@ -388,8 +366,7 @@ class App(ctk.CTk,tk.Menu):
             
 
     def selectMethods(self):
-    
-        #jos stocks on valittu pudotusvalikosta earning cb on valittu
+        
         if self.choice=="Stocks":   
             self.an.fetchData(self.textbox,self.codeEntry.get(),self.valueCB)
         elif self.choice=="Crypto":

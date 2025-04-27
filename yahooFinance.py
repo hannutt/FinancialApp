@@ -2,43 +2,89 @@ import yfinance as yf
 import matplotlib.pyplot as plt
 from marketStack import MarketStack
 import numpy as np
+import customtkinter as ctk
 class YahooFinance():
      def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)
         self.ms=MarketStack()
 
         self.barValues=[]
+        self.tickerlist=[]
 
         
 
-     def getOption(self,val,stockcode,tbox):
+     def getOption(self,val,stockcode,tbox,valuecb,tickerbtn,tickerEntry,multiple):
+         self.tickerbtn=tickerbtn
          self.stockcode=stockcode
          self.tbox=tbox
-         self.optionDict={'Recommendations':self.getRecomms,'Major Holders':self.getHolders ,'Mutual fund hold.':self.GetmutualFunds,'Dividends':self.getDividens}
+         self.valuecb=valuecb
+         self.tickerEntry=tickerEntry
+         self.multiple=multiple
+         self.optionDict={'Select':self.clearFields,'Recommendations':self.getRecomms,'Major Holders':self.getHolders ,'Mutual fund hold.':self.GetmutualFunds,'Dividends':self.getDividens,'Multiple tickers':self.multipleTickers,'General':self.stockGeneral}
          #käyttäjän valitsema vaihtoehto eli recommendations, holders jne
          self.val=val
          #metodin kutsu sulkeet lisätään tässä, muuten suoritetaan kaikki metodit
          self.optionDict[self.val]()
          #self.ticker=yf.ticker(self.stockcode)
+     def clearFields(self):
+         self.tickerbtn.grid_forget()
+         self.multiple.grid_forget()
+         
+    
+     def stockGeneral(self):
+         stock = yf.Ticker(self.stockcode)
+         info = stock.info
+         self.tbox.insert("end",info['longName'])
+         self.tbox.insert("end","\n")
+         self.tbox.insert("end",info['sector'])
+         self.tbox.insert("end","\n")
+         self.tbox.insert("end",info['industry'])
+         self.tbox.insert("end","\n")
+         self.tbox.insert("end",info['marketCap'])
+         self.tbox.insert("end","\n")
+         self.tbox.insert("end",info['trailingPE'])
+
+    
+     def multipleTickers(self):
+        
+         self.tickerbtn.grid(row=5,column=1,sticky="E")
+         self.multiple.grid(row=6,column=1,sticky="W")
+
+     def setTickerToList(self):
+         self.tickerlist.append(self.tickerEntry.get())
+
+         self.tickerEntry.delete(0,"end")
+    
+     def getMultipleTickers(self):
+         self.tbox.insert("end",yf.download(self.tickerlist, period='1d'))
+         
+         
     
      def getRecomms(self):
          ticker = yf.Ticker(self.stockcode)
+         info=ticker.info
+         
          recommendations=ticker.get_recommendations(proxy=None, as_dict=False)
+         #buy,sell yms dict-objekteissa on 3 avainta jokaisessa 0-1-2
+         #talletetaan vain avaimen 0 arvot.
          self.barValues.append(recommendations['buy'][0])
          self.barValues.append(recommendations['strongBuy'][0])
          self.barValues.append(recommendations['sell'][0])
          self.barValues.append(recommendations['strongSell'][0])
          self.barValues.append(recommendations['hold'][0])
          self.tbox.insert("end",recommendations)
-         self.createBar(self.stockcode)
+         #configurella voi muuttaa toisessa luokassa määritellyn komponentin metodin uudelleen
+         self.valuecb.configure(command=lambda:self.createBar(self.stockcode,info['longName']))
+         self.valuecb.grid(row=11,column=1,sticky="E")
         
-     def createBar(self,stockcode):
+        
+     def createBar(self,stockcode,name):
          fig, ax = plt.subplots()
          lbl = ["Buy", "Strong buy", "Sell", "Strong sell", "Hold"]
         
          bar_colors = ['tab:green', 'tab:cyan', 'tab:red','tab:orange','tab:brown']
          ax.bar(lbl,self.barValues,color=bar_colors)
-         ax.set_title(stockcode)
+         ax.set_title(name)
          plt.show()
      
     

@@ -4,13 +4,25 @@ from tkinter.ttk import *
 import tkinter as tk
 from ttkwidgets.autocomplete import AutocompleteEntry
 from tkcalendar import DateEntry
+from marketStack import MarketStack
 class UiScripts():
     def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.ms=MarketStack()
+        
+    def createStock(self,stockOpt,autoCB):
+         stockOpt.grid(row=6,column=1,sticky="W",pady=10)
+         autoCB.grid(row=4,column=1,sticky="w",pady=10)
     
-    def historyComponents(self,codeEntry,historyOptions,fromDate,toDate,quantity,getBtn):
+    def createCrypto(self,cryptoOpt,autoCB):
+         cryptoOpt.grid(row=6,column=1,sticky="W")
+         autoCB.grid(row=4,column=1,sticky="w",pady=10)
+    
+    def historyComponents(self,codeEntry,historyOptions,fromDate,toDate,quantity,getBtn,acCB,pressTab):
            self.fromDate=fromDate
            self.toDate=toDate
+           self.pressTab=pressTab
+           acCB.grid(row=4,column=1,sticky="w",pady=10)
            codeEntry.grid(row=5, column=1,sticky="W")
            historyOptions.grid(row=7,column=1,sticky="W",pady=10)
            #fromDate=ctk.CTkEntry(self,placeholder_text="FROM (YYYY-MM-DD)")
@@ -32,6 +44,29 @@ class UiScripts():
          getBtn.grid_forget()
          getTermBtn.grid(row=5,column=1,sticky="E")
          financeDict.grid(row=5,column=1,sticky="W")
+    
+    def createPodcast(self,codeEntry,getBtn,podcasts,podstop):
+         
+         codeEntry.grid_forget()
+         getBtn.grid_forget()
+         podcasts.grid(row=5,column=1,sticky="W")
+         podstop.grid(row=6,column=1,sticky="W",pady=10)
+    
+    def createYahooFinance(self,getBtn,useac,yfOpt,codeEntry):
+         getBtn.grid_forget()
+         useac.grid(row=4,column=1,sticky="W")
+         yfOpt.grid(row=3,column=1,sticky="E",padx=10)
+         codeEntry.grid(row=5,column=1,sticky="W")
+         
+    
+    def createIndex(self,indexmenu,codeEntry,getBtn):
+         indexmenu.grid(row=5,column=1,sticky="W")
+         codeEntry.grid_forget()
+         getBtn.grid_forget()
+
+         
+    
+         
     def calendarMethod(self,event):
         self.cal = DateEntry(date_pattern="yyyy-mm-dd")
         self.cal.grid(row=8,column=1,sticky="W",pady=10)
@@ -49,7 +84,7 @@ class UiScripts():
         self.pressTab.grid(row=8,column=1)
         
     def setCalDateToEnd(self,event):
-         #self.pressTab.grid_forget()
+         self.pressTab.grid_forget()
          self.cal = DateEntry(date_pattern="yyyy-mm-dd")
          self.cal.grid(row=8,column=1,sticky="W",pady=10)
          self.cal.bind("<Tab>",self.setCalDateToEndField)
