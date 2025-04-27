@@ -137,10 +137,9 @@ The user can also create more complex stock value charts. Example where the user
 This figure shows the next three estimated EPS numbers for Apple stock. The EPS numbers are taken from the API's JSON response and stored in a Python list. The Matplotlib library draws the figure based on the list values. List values ​​are sorted from smallest to largest using the Python List Sort method.
 
 ![alt text](images/plotApple.png)
+This image shows recommendations for Nvidia stock in a bar chart. The values ​​were retrieved using the Python yFinance (Yahoo Finance) API
 
-
-
-
+![alt text](images/nvdaRecomms.png)
 
 HISTORICAL STOCK DATA
 

@@ -222,10 +222,6 @@ class Options(ctk.CTk):
     def stopPodcast(self):
         self.p.stop()
     
-
-    def createCommodity(self,commenu):
-        
-         commenu.grid(row=4, column=1,padx=10, pady=10,columnspan=1, sticky="ew")
     
 
     def createMetals(self,preciousmenu,codefield):

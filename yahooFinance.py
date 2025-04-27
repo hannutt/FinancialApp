@@ -1,10 +1,13 @@
 import yfinance as yf
 import matplotlib.pyplot as plt
 from marketStack import MarketStack
+import numpy as np
 class YahooFinance():
      def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)
         self.ms=MarketStack()
+
+        self.barValues=[]
 
         
 
@@ -16,12 +19,28 @@ class YahooFinance():
          self.val=val
          #metodin kutsu sulkeet lisätään tässä, muuten suoritetaan kaikki metodit
          self.optionDict[self.val]()
-         self.ticker=yf.ticker(self.stockcode)
+         #self.ticker=yf.ticker(self.stockcode)
     
      def getRecomms(self):
          ticker = yf.Ticker(self.stockcode)
          recommendations=ticker.get_recommendations(proxy=None, as_dict=False)
+         self.barValues.append(recommendations['buy'][0])
+         self.barValues.append(recommendations['strongBuy'][0])
+         self.barValues.append(recommendations['sell'][0])
+         self.barValues.append(recommendations['strongSell'][0])
+         self.barValues.append(recommendations['hold'][0])
          self.tbox.insert("end",recommendations)
+         self.createBar(self.stockcode)
+        
+     def createBar(self,stockcode):
+         fig, ax = plt.subplots()
+         lbl = ["Buy", "Strong buy", "Sell", "Strong sell", "Hold"]
+        
+         bar_colors = ['tab:green', 'tab:cyan', 'tab:red','tab:orange','tab:brown']
+         ax.bar(lbl,self.barValues,color=bar_colors)
+         ax.set_title(stockcode)
+         plt.show()
+     
     
      def getHolders(self):
          ticker = yf.Ticker(self.stockcode)

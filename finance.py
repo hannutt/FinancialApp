@@ -23,7 +23,7 @@ from databaseConnection import DatabaseConnection
 from ApiNinjas import Apininjas
 import speech_recognition as sr
 from datetime import datetime
-
+from uiScripts import UiScripts
 
 import vlc
 from Scraper import Scrape
@@ -58,8 +58,10 @@ class App(ctk.CTk,tk.Menu):
         self.sc=Scrape()
         self.ytf=YahooFinance()
         self.gd=GDrive()
+        self.us=UiScripts()
 
         self.tickerPath=""
+        
         
         #App luokan textbox voidaan lähettää  options luokalle parametria command=lambda:o.currencyWidgets(self.textbox))
         #self.menubar.add_command(label='Cur. convert',command=lambda:self.opt.currencyWidgets())
@@ -69,11 +71,8 @@ class App(ctk.CTk,tk.Menu):
         self.menubar.add_command(label='Send email',command=lambda:self.opt.emailOption())
         self.menubar.add_command(label='Newest ETFs',command=lambda:self.showDialog())
         
-        
-        
-        
-        #self.add_cascade()
-        self.graph=False
+     
+     
         self.inputField=ctk.StringVar()
         #ikkunan koko
         self.geometry("450x450")
@@ -168,6 +167,11 @@ class App(ctk.CTk,tk.Menu):
         self.cryptoOptions=ctk.CTkSegmentedButton(self,values=['Save cryptos to CSV'],command=self.getStockOption)
         self.quantity=ctk.CTkComboBox(self,values=['1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '4h', '1d', '5d', '1wk', '1mo', '3mo'],command=self.ytf.getComboBoxValue,width=70)
         self.quantity.set('1m')
+        self.pressTab=ctk.CTkLabel(self,text="Press tab",fg_color="red")
+        self.fromDate=ctk.CTkEntry(self,placeholder_text="FROM (YYYY-MM-DD)")
+        self.toDate=ctk.CTkEntry(self,placeholder_text="TO (YYYY-MM-DD)")
+        
+        
    
 
     def getStockOption(self,val):
@@ -267,28 +271,15 @@ class App(ctk.CTk,tk.Menu):
                 self.cryptoOptions.grid(row=6,column=1,sticky="E")
             
             elif self.choice=="Commodities":
-                
-                self.codeEntry.grid_forget()
-                self.opt.createCommodity(self.comMenu)
+                self.us.createCommodity(self.comMenu,self.codeEntry,self.getBtn)
 
             elif self.choice=="History":
-                self.codeEntry.grid(row=5, column=1,sticky="W")
-                self.historyOptions.grid(row=7,column=1,sticky="W",pady=10)
-                self.fromDate=ctk.CTkEntry(self,placeholder_text="FROM (YYYY-MM-DD)")
-                self.fromDate.grid(row=6,column=1,sticky="W",pady=10)
-                self.fromDate.bind("<Button>",self.calendarMethod)
-                self.toDate=ctk.CTkEntry(self,placeholder_text="TO (YYYY-MM-DD)")
-                self.toDate.bind("<Button>",self.setCalDateToEnd)
-                self.toDate.grid(row=6,column=1,sticky="E")
-                self.quantity.grid(row=7,column=1,sticky="E",padx=5)
-                self.getBtn.grid_forget()
+                self.us.historyComponents(self.codeEntry,self.historyOptions,self.fromDate,self.toDate,self.quantity,self.getBtn,self.useAC)
+               
+                
             elif self.choice=="Finance Dictionary":
-                self.codeEntry.grid(row=6,column=1,sticky="W",pady=5)
-                self.getBtn.grid_forget()
-                #self.getTermBtn=ctk.CTkButton(self,text='Get data',command=lambda:self.dbconn.getData(self.textbox,self.codeEntry.get()))
-                self.getTermBtn.grid(row=5,column=1,sticky="E")
-                #self.financeDict=ctk.CTkOptionMenu(self,values=['Select','p/e','eps','adr','bear market'],command=self.dbconn.getFinanceTerm)
-                self.financeDict.grid(row=5,column=1,sticky="W")
+                self.us.createDictionary(self.codeEntry,self.getBtn,self.getTermBtn,self.financeDict)
+            
             elif choice=="Inflation":
                 self.getBtn.grid_forget()
                 self.getInflationBtn=ctk.CTkButton(self,text="Get inflation",command=lambda:self.ms.getInflation(self.codeEntry.get(),self.textbox))
@@ -317,20 +308,18 @@ class App(ctk.CTk,tk.Menu):
                 self.getBtn.grid_forget()
             
             elif choice=="Yahoo Finance":
-                
-                self.codeentryAc=AutocompleteEntry(self,completevalues=self.tickerList)
-                self.codeentryAc.grid(row=7,column=1,sticky="ew")
-                #self.codeEntry.grid(row=5, column=1, sticky="ew",pady=5)
-                self.codeEntry.grid_forget()
                 self.getBtn.grid_forget()
-                self.yfOptions.grid(row=6,column=1,sticky="w")
-
+                self.useAC.grid(row=4,column=1,sticky="W")
+                self.yfOptions.grid(row=4,column=1,sticky="E")
+                self.codeEntry.grid(row=5,column=1,sticky="W")
          #piilottaa dict oliossa olevat gridit              
         else:
             self.grids={'grid':self.codeEntry.grid_forget(),'grid':self.earnings.grid_forget(),'grid':self.comMenu.grid_forget(),'grid':self.newsAboutComp.grid_forget()
                         ,'grid':self.podcasts.grid_forget(),'grid':self.podstop.grid_forget()
                         ,'grid':self.financeDict.grid_forget(),'grid':self.getTermBtn.grid_forget(),'grid':self.indexMenuByCountry.grid_forget()
-                        ,'grid':self.codeentryAc.grid_forget(),'grid':self.yfOptions.grid_forget(),'grid':self.fromDate.grid_forget(),'grid':self.toDate.grid_forget()}
+                        ,'grid':self.useAC.grid_forget(),'grid':self.yfOptions.grid_forget(),'grid':self.fromDate.grid_forget(),
+                         'grid':self.toDate.grid_forget(),'grid':self.cryptoOptions.grid_forget(),'grid':self.historyOptions.grid_forget(),'grid':self.quantity.grid_forget()}
+                        
             self.grids['grid']
             
             #muutetaan buttonin tekstiä configuren avulla
@@ -377,7 +366,6 @@ class App(ctk.CTk,tk.Menu):
         #entries on syötteen sisältämät tagit
         for f in feed.entries:
             #näytetään kaikki title tagien sisältämä data
-
             self.textbox.insert("end",f.title)
     
     def showAc(self):
@@ -388,16 +376,13 @@ class App(ctk.CTk,tk.Menu):
         if not os.path.exists("tickers.txt") and not os.path.exists("cryptos.txt"):
             self.gd.connect()
             self.setAcText()
-            
-        if self.acVar.get()=="on" and self.choice=="Stocks":
+        
+        if self.acVar.get()=="on":
             self.codeEntry.grid_forget()
             self.codeentryAc=AutocompleteEntry(self,completevalues=self.tickerList)
             self.codeentryAc.grid(row=5, column=1, sticky="ew")
-        elif self.acVar.get()=="on" and self.choice=="Crypto":
-            self.codeEntry.grid_forget()
-            self.codeentryAc=AutocompleteEntry(self,completevalues=self.cryptoList)
-            self.codeentryAc.grid(row=5, column=1, sticky="ew")
-        elif self.acVar.get()=="off":
+        
+        if self.acVar.get()=="off":
             self.codeentryAc.grid_forget()
             self.codeEntry.grid(row=5, column=1, sticky="ew")
             
@@ -416,30 +401,6 @@ class App(ctk.CTk,tk.Menu):
          self.earnings.grid(row=6,column=1,sticky="W")
          self.newsAboutComp.grid(row=6,column=1,sticky="E")
     
-    def calendarMethod(self,event):
-        self.cal = DateEntry(self, date_pattern="yyyy-mm-dd")
-        self.cal.grid(row=8,column=1,sticky="W",pady=10)
-        self.cal.bind("<FocusOut>",self.setCalDate) 
-    
-    def setCalDate(self,event):
-        self.fromDate.delete(0,END)
-        self.selected_date = self.cal.get()
-        self.fromDate.insert(0,self.selected_date)
-        self.cal.grid_forget()
-        
-    def setCalDateToEnd(self,event):
-         self.cal = DateEntry(self, date_pattern="yyyy-mm-dd")
-         self.cal.grid(row=8,column=1,sticky="W",pady=10)
-         self.cal.bind("<FocusOut>",self.setCalDateToEndField)
-            
-    def setCalDateToEndField(self,event):
-        self.toDate.delete(0,END)
-        self.selected_date2 = self.cal.get()
-        self.toDate.insert(0,self.selected_date2)
-        self.cal.grid_forget()
-    
-  
- 
 if __name__ == "__main__":
 
     app = App()
